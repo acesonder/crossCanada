@@ -985,14 +985,16 @@ updateProgress = function() {
 // ===== NEW FEATURES =====
 
 // ===== Navigation Menu =====
-function navigateToSection(sectionName) {
+function navigateToSection(sectionName, event) {
     // Remove active class from all nav items
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
     
-    // Add active class to clicked item
-    event.target.closest('.nav-item').classList.add('active');
+    // Add active class to clicked item if event is provided
+    if (event && event.target) {
+        event.target.closest('.nav-item').classList.add('active');
+    }
     
     // Scroll to section
     const sectionMap = {
@@ -1284,12 +1286,14 @@ function displayImportantLocations() {
     `).join('');
 }
 
-function filterLocations(type) {
+function filterLocations(type, event) {
     const cards = document.querySelectorAll('.location-card');
     const buttons = document.querySelectorAll('.location-filters .filter-btn');
     
     buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
     
     cards.forEach(card => {
         if (type === 'all' || card.dataset.type === type) {
@@ -1337,6 +1341,8 @@ function generateHourlyWeather() {
     container.innerHTML = html;
 }
 
+let weatherNotificationInterval = null;
+
 function toggleWeatherNotifications(enabled) {
     if (enabled && 'Notification' in window) {
         Notification.requestPermission().then(permission => {
@@ -1348,13 +1354,23 @@ function toggleWeatherNotifications(enabled) {
         });
     } else {
         showNotification('Weather notifications disabled', 'info');
+        // Clear interval if exists
+        if (weatherNotificationInterval) {
+            clearInterval(weatherNotificationInterval);
+            weatherNotificationInterval = null;
+        }
     }
     localStorage.setItem('weatherNotifications', enabled);
 }
 
 function scheduleWeatherNotifications() {
+    // Clear existing interval if any
+    if (weatherNotificationInterval) {
+        clearInterval(weatherNotificationInterval);
+    }
+    
     // Check weather every hour and notify if conditions change
-    setInterval(() => {
+    weatherNotificationInterval = setInterval(() => {
         const enabled = localStorage.getItem('weatherNotifications') === 'true';
         if (enabled) {
             const randomCondition = ['Clear skies ahead', 'Snow expected in 2 hours', 'Temperature dropping', 'Winds picking up'][Math.floor(Math.random() * 4)];
@@ -1457,11 +1473,10 @@ function showNotification(message, type = 'info') {
     // Add to notification panel
     updateNotificationPanel();
     
-    // Browser notification if enabled
+    // Browser notification if enabled - note: icon parameter should be a URL to an image file
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Cross-Canada Dashboard', {
-            body: message,
-            icon: '🚗'
+            body: message
         });
     }
 }

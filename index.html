@@ -45,35 +45,35 @@
         <!-- Top Navigation Menu Bar -->
         <nav class="top-nav-bar fade-in">
             <div class="nav-container">
-                <button class="nav-item active" onclick="navigateToSection('dashboard')" data-section="dashboard">
+                <button class="nav-item active" onclick="navigateToSection('dashboard', event)" data-section="dashboard">
                     <span class="nav-icon">📊</span>
                     <span class="nav-label">Dashboard</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('route')" data-section="route">
+                <button class="nav-item" onclick="navigateToSection('route', event)" data-section="route">
                     <span class="nav-icon">🗺️</span>
                     <span class="nav-label">Route</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('weather')" data-section="weather">
+                <button class="nav-item" onclick="navigateToSection('weather', event)" data-section="weather">
                     <span class="nav-icon">🌦️</span>
                     <span class="nav-label">Weather</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('safety')" data-section="safety">
+                <button class="nav-item" onclick="navigateToSection('safety', event)" data-section="safety">
                     <span class="nav-icon">🛡️</span>
                     <span class="nav-label">Safety</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('drivers')" data-section="drivers">
+                <button class="nav-item" onclick="navigateToSection('drivers', event)" data-section="drivers">
                     <span class="nav-icon">👥</span>
                     <span class="nav-label">Drivers</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('checklist')" data-section="checklist">
+                <button class="nav-item" onclick="navigateToSection('checklist', event)" data-section="checklist">
                     <span class="nav-icon">✅</span>
                     <span class="nav-label">Checklist</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('emergency')" data-section="emergency">
+                <button class="nav-item" onclick="navigateToSection('emergency', event)" data-section="emergency">
                     <span class="nav-icon">🚨</span>
                     <span class="nav-label">Emergency</span>
                 </button>
-                <button class="nav-item" onclick="navigateToSection('help')" data-section="help">
+                <button class="nav-item" onclick="navigateToSection('help', event)" data-section="help">
                     <span class="nav-icon">💙</span>
                     <span class="nav-label">Help Centre</span>
                 </button>
@@ -1103,11 +1103,11 @@
                 </div>
                 <div class="widget-content">
                     <div class="location-filters">
-                        <button class="filter-btn active" onclick="filterLocations('all')">All</button>
-                        <button class="filter-btn" onclick="filterLocations('police')">🚓 Police</button>
-                        <button class="filter-btn" onclick="filterLocations('fire')">🚒 Fire</button>
-                        <button class="filter-btn" onclick="filterLocations('carpool')">🚗 Carpool</button>
-                        <button class="filter-btn" onclick="filterLocations('other')">📍 Other</button>
+                        <button class="filter-btn active" onclick="filterLocations('all', event)">All</button>
+                        <button class="filter-btn" onclick="filterLocations('police', event)">🚓 Police</button>
+                        <button class="filter-btn" onclick="filterLocations('fire', event)">🚒 Fire</button>
+                        <button class="filter-btn" onclick="filterLocations('carpool', event)">🚗 Carpool</button>
+                        <button class="filter-btn" onclick="filterLocations('other', event)">📍 Other</button>
                     </div>
                     <div class="locations-grid" id="locations-grid">
                         <!-- Locations will be populated by JavaScript -->

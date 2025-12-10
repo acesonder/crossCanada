@@ -42,6 +42,44 @@
             </div>
         </header>
 
+        <!-- Top Navigation Menu Bar -->
+        <nav class="top-nav-bar fade-in">
+            <div class="nav-container">
+                <button class="nav-item active" onclick="navigateToSection('dashboard', event)" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('route', event)" data-section="route">
+                    <span class="nav-icon">🗺️</span>
+                    <span class="nav-label">Route</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('weather', event)" data-section="weather">
+                    <span class="nav-icon">🌦️</span>
+                    <span class="nav-label">Weather</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('safety', event)" data-section="safety">
+                    <span class="nav-icon">🛡️</span>
+                    <span class="nav-label">Safety</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('drivers', event)" data-section="drivers">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Drivers</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('checklist', event)" data-section="checklist">
+                    <span class="nav-icon">✅</span>
+                    <span class="nav-label">Checklist</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('emergency', event)" data-section="emergency">
+                    <span class="nav-icon">🚨</span>
+                    <span class="nav-label">Emergency</span>
+                </button>
+                <button class="nav-item" onclick="navigateToSection('help', event)" data-section="help">
+                    <span class="nav-icon">💙</span>
+                    <span class="nav-label">Help Centre</span>
+                </button>
+            </div>
+        </nav>
+
         <!-- Settings Modal -->
         <div id="settings-modal" class="modal">
             <div class="modal-content">
@@ -927,6 +965,344 @@
                 </div>
             </div>
         </section>
+
+        <!-- Driver Tracking Widget -->
+        <section class="driver-tracking-section fade-in" id="drivers-section">
+            <div class="widget full-width" id="driver-tracking">
+                <div class="widget-header">
+                    <h3>👥 Driver Tracking</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('driver-tracking')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="driver-switch">
+                        <button class="driver-btn active" id="driver-a-btn" onclick="switchDriver('A')">
+                            <span class="driver-icon">🚗</span>
+                            <span class="driver-name">Driver A (London)</span>
+                        </button>
+                        <button class="driver-btn" id="driver-b-btn" onclick="switchDriver('B')">
+                            <span class="driver-icon">🚙</span>
+                            <span class="driver-name">Driver B (Chance)</span>
+                        </button>
+                    </div>
+                    <div class="driver-stats">
+                        <div class="driver-card" id="driver-a-card">
+                            <h4>🚗 Driver A (London)</h4>
+                            <div class="stat-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Distance Driven</span>
+                                    <span class="stat-value" id="driver-a-km">0 km</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Drive Time</span>
+                                    <span class="stat-value" id="driver-a-time">0 hrs</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Percentage</span>
+                                    <span class="stat-value" id="driver-a-pct">0%</span>
+                                </div>
+                            </div>
+                            <div class="driver-input">
+                                <label>Add Distance (km):</label>
+                                <input type="number" id="driver-a-input" min="0" step="10" placeholder="Enter km">
+                                <button class="btn-primary" onclick="addDriverDistance('A')">Add</button>
+                            </div>
+                        </div>
+                        <div class="driver-card" id="driver-b-card">
+                            <h4>🚙 Driver B (Chance)</h4>
+                            <div class="stat-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Distance Driven</span>
+                                    <span class="stat-value" id="driver-b-km">0 km</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Drive Time</span>
+                                    <span class="stat-value" id="driver-b-time">0 hrs</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Percentage</span>
+                                    <span class="stat-value" id="driver-b-pct">0%</span>
+                                </div>
+                            </div>
+                            <div class="driver-input">
+                                <label>Add Distance (km):</label>
+                                <input type="number" id="driver-b-input" min="0" step="10" placeholder="Enter km">
+                                <button class="btn-primary" onclick="addDriverDistance('B')">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="driver-progress">
+                        <h4>Overall Progress</h4>
+                        <div class="driver-progress-bars">
+                            <div class="driver-progress-item">
+                                <span class="driver-label">Driver A (London)</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill driver-a-fill" id="driver-a-progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="driver-progress-item">
+                                <span class="driver-label">Driver B (Chance)</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill driver-b-fill" id="driver-b-progress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pre-Drive Checklist Widget -->
+        <section class="predrive-checklist-section fade-in" id="checklist-section">
+            <div class="widget full-width" id="predrive-checklist">
+                <div class="widget-header">
+                    <h3>✅ Pre-Drive Checklist</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('predrive-checklist')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="checklist-controls">
+                        <div class="add-item-form">
+                            <input type="text" id="new-checklist-item" placeholder="Add new checklist item...">
+                            <button class="btn-primary" onclick="addChecklistItem()">➕ Add Item</button>
+                        </div>
+                    </div>
+                    <div class="checklist-items" id="predrive-checklist-items">
+                        <!-- Default items will be loaded from JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Contacts Management Widget -->
+        <section class="emergency-contacts-section fade-in" id="emergency-section">
+            <div class="widget full-width" id="emergency-contacts-mgmt">
+                <div class="widget-header">
+                    <h3>🚨 Emergency Contacts Management</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('emergency-contacts-mgmt')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="contact-controls">
+                        <div class="add-contact-form">
+                            <input type="text" id="new-contact-name" placeholder="Contact name...">
+                            <input type="text" id="new-contact-number" placeholder="Phone number...">
+                            <button class="btn-primary" onclick="addEmergencyContact()">➕ Add Contact</button>
+                        </div>
+                    </div>
+                    <div class="emergency-contacts-list" id="emergency-contacts-list">
+                        <!-- Contacts will be loaded from JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Local Important Locations Widget -->
+        <section class="local-locations-section fade-in" id="locations-section">
+            <div class="widget full-width" id="local-locations">
+                <div class="widget-header">
+                    <h3>📍 Local Important Locations</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('local-locations')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="location-filters">
+                        <button class="filter-btn active" onclick="filterLocations('all', event)">All</button>
+                        <button class="filter-btn" onclick="filterLocations('police', event)">🚓 Police</button>
+                        <button class="filter-btn" onclick="filterLocations('fire', event)">🚒 Fire</button>
+                        <button class="filter-btn" onclick="filterLocations('carpool', event)">🚗 Carpool</button>
+                        <button class="filter-btn" onclick="filterLocations('other', event)">📍 Other</button>
+                    </div>
+                    <div class="locations-grid" id="locations-grid">
+                        <!-- Locations will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hourly Weather Widget -->
+        <section class="hourly-weather-section fade-in" id="weather-section">
+            <div class="widget full-width" id="hourly-weather">
+                <div class="widget-header">
+                    <h3>🌦️ Hourly Weather Forecast</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('hourly-weather')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="weather-notification-toggle">
+                        <label>
+                            <input type="checkbox" id="weather-notifications" onchange="toggleWeatherNotifications(this.checked)">
+                            Enable Weather Notifications
+                        </label>
+                    </div>
+                    <div class="hourly-weather-scroll">
+                        <div class="hourly-weather-grid" id="hourly-weather-grid">
+                            <!-- Hourly weather will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Help Centre Widget -->
+        <section class="help-centre-section fade-in" id="help-section">
+            <div class="widget full-width" id="help-centre">
+                <div class="widget-header">
+                    <h3>💙 Help Centre & Support Services</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('help-centre')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="help-categories">
+                        <div class="help-category">
+                            <h4>🏠 Local Shelters Along Route</h4>
+                            <div class="help-list">
+                                <div class="help-item">
+                                    <strong>Ontario:</strong>
+                                    <ul>
+                                        <li>Cobourg: Hope House - 905-372-5452 (Emergency shelter)</li>
+                                        <li>Sudbury: Off the Street Shelter - 705-674-4447</li>
+                                        <li>Sault Ste. Marie: Women in Crisis - 705-759-1230</li>
+                                        <li>Thunder Bay: Shelter House - 807-623-2576</li>
+                                    </ul>
+                                </div>
+                                <div class="help-item">
+                                    <strong>Manitoba:</strong>
+                                    <ul>
+                                        <li>Kenora: Fellowship Centre - 807-468-5440</li>
+                                        <li>Winnipeg: Main Street Project - 204-982-8245</li>
+                                        <li>Brandon: Samaritan House - 204-727-4673</li>
+                                    </ul>
+                                </div>
+                                <div class="help-item">
+                                    <strong>Saskatchewan:</strong>
+                                    <ul>
+                                        <li>Regina: Carmichael Outreach - 306-757-2227</li>
+                                        <li>Melfort: Salvation Army - 306-752-5577</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-category">
+                            <h4>📞 Service Desks & Outreach Teams</h4>
+                            <div class="help-list">
+                                <div class="help-item">
+                                    <strong>Crisis Lines:</strong>
+                                    <ul>
+                                        <li>Canada Crisis Hotline: 1-833-456-4566 (24/7)</li>
+                                        <li>Mental Health Crisis: 1-866-531-2600</li>
+                                        <li>Kids Help Phone: 1-800-668-6868</li>
+                                        <li>Talk Suicide Canada: 1-833-456-4566</li>
+                                    </ul>
+                                </div>
+                                <div class="help-item">
+                                    <strong>Outreach Services:</strong>
+                                    <ul>
+                                        <li>Street Outreach Thunder Bay: 807-622-5122</li>
+                                        <li>Winnipeg Outreach: 204-943-0051</li>
+                                        <li>Regina Mobile Crisis: 306-757-0127</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-category">
+                            <h4>💉 Harm Reduction Supplies</h4>
+                            <div class="help-list">
+                                <div class="help-item">
+                                    <strong>Ontario:</strong>
+                                    <ul>
+                                        <li>Thunder Bay: NorWest CHC - 807-622-8235 (Supplies & Naloxone)</li>
+                                        <li>Sudbury: Health Sciences North - 705-523-7100</li>
+                                    </ul>
+                                </div>
+                                <div class="help-item">
+                                    <strong>Manitoba:</strong>
+                                    <ul>
+                                        <li>Winnipeg: Street Connections - 204-981-0742 (24/7)</li>
+                                        <li>Winnipeg: Nine Circles - 204-940-6000</li>
+                                    </ul>
+                                </div>
+                                <div class="help-item">
+                                    <strong>Saskatchewan:</strong>
+                                    <ul>
+                                        <li>Regina: AIDS Programs South Sask - 306-924-8420</li>
+                                        <li>Regina: Newo Yotina - 306-924-1500</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-category">
+                            <h4>📋 Appointment Task List</h4>
+                            <div class="appointment-list" id="appointment-task-list">
+                                <div class="add-appointment-form">
+                                    <input type="text" id="new-appointment" placeholder="Add appointment/task...">
+                                    <input type="date" id="appointment-date">
+                                    <button class="btn-primary" onclick="addAppointment()">➕ Add</button>
+                                </div>
+                                <div id="appointment-items">
+                                    <!-- Appointments will be loaded from JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-category">
+                            <h4>ℹ️ Additional Resources</h4>
+                            <div class="help-list">
+                                <div class="help-item">
+                                    <strong>General Support:</strong>
+                                    <ul>
+                                        <li>211 Service (Dial 211): Community & Social Services</li>
+                                        <li>Legal Aid Ontario: 1-800-668-8258</li>
+                                        <li>Income Support: 1-888-789-4199</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Widget Overlay -->
+        <div class="nav-widget-overlay" id="nav-widget">
+            <div class="nav-widget-header">
+                <span>🧭 Navigation</span>
+                <button class="close-widget" onclick="toggleNavWidget()">✕</button>
+            </div>
+            <div class="nav-widget-content">
+                <div class="nav-widget-item">
+                    <span class="label">Next Turn:</span>
+                    <span class="value" id="next-turn">Trans-Canada Hwy West</span>
+                </div>
+                <div class="nav-widget-item">
+                    <span class="label">Distance:</span>
+                    <span class="value" id="turn-distance">150 km</span>
+                </div>
+                <div class="nav-widget-item">
+                    <span class="label">ETA:</span>
+                    <span class="value" id="turn-eta">1.5 hrs</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Badge -->
+        <div class="notification-badge" id="notification-badge" onclick="showNotifications()">
+            <span class="badge-icon">🔔</span>
+            <span class="badge-count" id="notification-count">0</span>
+        </div>
+
+        <!-- Notification Panel -->
+        <div class="notification-panel" id="notification-panel">
+            <div class="notification-header">
+                <h4>Notifications</h4>
+                <button class="close-panel" onclick="closeNotifications()">✕</button>
+            </div>
+            <div class="notification-list" id="notification-list">
+                <p class="empty-state">No new notifications</p>
+            </div>
+        </div>
+
+        <!-- Toggle Nav Widget Button -->
+        <button class="floating-nav-btn" onclick="toggleNavWidget()" title="Toggle Navigation Widget">
+            🧭
+        </button>
 
         <!-- Footer -->
         <footer class="footer">

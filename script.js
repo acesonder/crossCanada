@@ -981,3 +981,560 @@ updateProgress = function() {
     originalUpdateProgress();
     updateAchievements();
 };
+
+// ===== NEW FEATURES =====
+
+// ===== Navigation Menu =====
+function navigateToSection(sectionName, event) {
+    // Remove active class from all nav items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to clicked item if event is provided
+    if (event && event.target) {
+        event.target.closest('.nav-item').classList.add('active');
+    }
+    
+    // Scroll to section
+    const sectionMap = {
+        'dashboard': 'sortable-dashboard',
+        'route': 'map-widget',
+        'weather': 'hourly-weather',
+        'safety': 'safety',
+        'drivers': 'drivers-section',
+        'checklist': 'checklist-section',
+        'emergency': 'emergency-section',
+        'help': 'help-section'
+    };
+    
+    const targetId = sectionMap[sectionName];
+    if (targetId) {
+        const element = document.getElementById(targetId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+}
+
+// ===== Driver Tracking =====
+let driverData = {
+    A: { km: 0, time: 0 },
+    B: { km: 0, time: 0 }
+};
+
+function loadDriverData() {
+    const saved = localStorage.getItem('driverData');
+    if (saved) {
+        driverData = JSON.parse(saved);
+        updateDriverDisplay();
+    }
+}
+
+function saveDriverData() {
+    localStorage.setItem('driverData', JSON.stringify(driverData));
+}
+
+function switchDriver(driver) {
+    document.querySelectorAll('.driver-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const btnId = `driver-${driver.toLowerCase()}-btn`;
+    document.getElementById(btnId).classList.add('active');
+}
+
+function addDriverDistance(driver) {
+    const inputId = `driver-${driver.toLowerCase()}-input`;
+    const input = document.getElementById(inputId);
+    const distance = parseFloat(input.value);
+    
+    if (!distance || distance <= 0) {
+        alert('Please enter a valid distance');
+        return;
+    }
+    
+    // Add to driver's total
+    driverData[driver].km += distance;
+    driverData[driver].time += distance / 80; // Assuming avg speed of 80 km/h
+    
+    // Update display
+    updateDriverDisplay();
+    
+    // Save to localStorage
+    saveDriverData();
+    
+    // Clear input
+    input.value = '';
+    
+    // Show notification
+    showNotification(`Added ${distance} km to Driver ${driver}`, 'info');
+}
+
+function updateDriverDisplay() {
+    const totalKm = driverData.A.km + driverData.B.km;
+    
+    // Update Driver A
+    document.getElementById('driver-a-km').textContent = `${Math.round(driverData.A.km)} km`;
+    document.getElementById('driver-a-time').textContent = `${driverData.A.time.toFixed(1)} hrs`;
+    document.getElementById('driver-a-pct').textContent = totalKm > 0 ? `${Math.round((driverData.A.km / totalKm) * 100)}%` : '0%';
+    document.getElementById('driver-a-progress').style.width = totalKm > 0 ? `${(driverData.A.km / TRIP_CONFIG.TOTAL_DISTANCE) * 100}%` : '0%';
+    
+    // Update Driver B
+    document.getElementById('driver-b-km').textContent = `${Math.round(driverData.B.km)} km`;
+    document.getElementById('driver-b-time').textContent = `${driverData.B.time.toFixed(1)} hrs`;
+    document.getElementById('driver-b-pct').textContent = totalKm > 0 ? `${Math.round((driverData.B.km / totalKm) * 100)}%` : '0%';
+    document.getElementById('driver-b-progress').style.width = totalKm > 0 ? `${(driverData.B.km / TRIP_CONFIG.TOTAL_DISTANCE) * 100}%` : '0%';
+}
+
+// ===== Pre-Drive Checklist =====
+let checklistItems = [];
+
+function loadChecklistItems() {
+    const saved = localStorage.getItem('checklistItems');
+    if (saved) {
+        checklistItems = JSON.parse(saved);
+    } else {
+        // Default items
+        checklistItems = [
+            { id: 1, text: 'Check tire pressure and condition', checked: false },
+            { id: 2, text: 'Fill up gas tank', checked: false },
+            { id: 3, text: 'Pack emergency kit', checked: false },
+            { id: 4, text: 'Download offline maps', checked: false },
+            { id: 5, text: 'Charge all devices', checked: false }
+        ];
+    }
+    displayChecklistItems();
+}
+
+function saveChecklistItems() {
+    localStorage.setItem('checklistItems', JSON.stringify(checklistItems));
+}
+
+function displayChecklistItems() {
+    const container = document.getElementById('predrive-checklist-items');
+    if (!container) return;
+    
+    container.innerHTML = checklistItems.map(item => `
+        <div class="checklist-item ${item.checked ? 'checked' : ''}">
+            <input type="checkbox" id="checklist-${item.id}" ${item.checked ? 'checked' : ''} 
+                   onchange="toggleChecklistItem(${item.id})">
+            <label for="checklist-${item.id}">${item.text}</label>
+            ${item.checked ? '<span class="status-badge">✓ Done</span>' : ''}
+            <button class="remove-item-btn" onclick="removeChecklistItem(${item.id})">Remove</button>
+        </div>
+    `).join('');
+}
+
+function addChecklistItem() {
+    const input = document.getElementById('new-checklist-item');
+    const text = input.value.trim();
+    
+    if (!text) {
+        alert('Please enter an item');
+        return;
+    }
+    
+    const newId = checklistItems.length > 0 ? Math.max(...checklistItems.map(i => i.id)) + 1 : 1;
+    checklistItems.push({ id: newId, text, checked: false });
+    
+    saveChecklistItems();
+    displayChecklistItems();
+    input.value = '';
+    
+    showNotification('Checklist item added', 'success');
+}
+
+function toggleChecklistItem(id) {
+    const item = checklistItems.find(i => i.id === id);
+    if (item) {
+        item.checked = !item.checked;
+        saveChecklistItems();
+        displayChecklistItems();
+    }
+}
+
+function removeChecklistItem(id) {
+    if (confirm('Remove this item from checklist?')) {
+        checklistItems = checklistItems.filter(i => i.id !== id);
+        saveChecklistItems();
+        displayChecklistItems();
+        showNotification('Item removed', 'info');
+    }
+}
+
+// ===== Emergency Contacts Management =====
+let emergencyContacts = [];
+
+function loadEmergencyContacts() {
+    const saved = localStorage.getItem('emergencyContacts');
+    if (saved) {
+        emergencyContacts = JSON.parse(saved);
+    } else {
+        // Default contacts
+        emergencyContacts = [
+            { id: 1, name: 'Emergency', number: '911', isDefault: true },
+            { id: 2, name: 'CAA Road Assistance', number: '1-800-222-4357', isDefault: true },
+            { id: 3, name: 'Ontario 511', number: '511', isDefault: true },
+            { id: 4, name: 'Weather Line', number: '1-800-463-4311', isDefault: true }
+        ];
+    }
+    displayEmergencyContacts();
+}
+
+function saveEmergencyContacts() {
+    localStorage.setItem('emergencyContacts', JSON.stringify(emergencyContacts));
+}
+
+function displayEmergencyContacts() {
+    const container = document.getElementById('emergency-contacts-list');
+    if (!container) return;
+    
+    container.innerHTML = emergencyContacts.map(contact => `
+        <div class="emergency-contact-card ${contact.isDefault ? 'default' : ''}">
+            <div class="contact-header">
+                <span class="contact-name">${contact.name}</span>
+                ${!contact.isDefault ? `<button class="remove-item-btn" onclick="removeEmergencyContact(${contact.id})">Remove</button>` : ''}
+            </div>
+            <div class="contact-number">${contact.number}</div>
+        </div>
+    `).join('');
+}
+
+function addEmergencyContact() {
+    const nameInput = document.getElementById('new-contact-name');
+    const numberInput = document.getElementById('new-contact-number');
+    
+    const name = nameInput.value.trim();
+    const number = numberInput.value.trim();
+    
+    if (!name || !number) {
+        alert('Please enter both name and number');
+        return;
+    }
+    
+    const newId = emergencyContacts.length > 0 ? Math.max(...emergencyContacts.map(c => c.id)) + 1 : 1;
+    emergencyContacts.push({ id: newId, name, number, isDefault: false });
+    
+    saveEmergencyContacts();
+    displayEmergencyContacts();
+    
+    nameInput.value = '';
+    numberInput.value = '';
+    
+    showNotification('Emergency contact added', 'success');
+}
+
+function removeEmergencyContact(id) {
+    if (confirm('Remove this contact?')) {
+        emergencyContacts = emergencyContacts.filter(c => c.id !== id);
+        saveEmergencyContacts();
+        displayEmergencyContacts();
+        showNotification('Contact removed', 'info');
+    }
+}
+
+// ===== Local Important Locations =====
+const importantLocations = [
+    // Police Stations
+    { id: 1, type: 'police', name: 'Cobourg Police', address: '107 King St W, Cobourg, ON', phone: '905-372-6821', city: 'Cobourg' },
+    { id: 2, type: 'police', name: 'Sudbury Police', address: '190 Brady St, Sudbury, ON', phone: '705-675-9171', city: 'Sudbury' },
+    { id: 3, type: 'police', name: 'Sault Ste. Marie Police', address: '580 Second Line E, Sault Ste. Marie, ON', phone: '705-949-6300', city: 'Sault Ste. Marie' },
+    { id: 4, type: 'police', name: 'Thunder Bay Police', address: '1200 Balmoral St, Thunder Bay, ON', phone: '807-684-1200', city: 'Thunder Bay' },
+    { id: 5, type: 'police', name: 'Kenora OPP', address: '225 Main St S, Kenora, ON', phone: '807-468-3128', city: 'Kenora' },
+    { id: 6, type: 'police', name: 'Winnipeg Police', address: '245 Smith St, Winnipeg, MB', phone: '204-986-6222', city: 'Winnipeg' },
+    { id: 7, type: 'police', name: 'Brandon Police', address: '1039 Princess Ave, Brandon, MB', phone: '204-729-2345', city: 'Brandon' },
+    { id: 8, type: 'police', name: 'Regina Police', address: '1717 Osler St, Regina, SK', phone: '306-777-6500', city: 'Regina' },
+    
+    // Fire Departments
+    { id: 9, type: 'fire', name: 'Cobourg Fire', address: '274 William St, Cobourg, ON', phone: '905-372-4301', city: 'Cobourg' },
+    { id: 10, type: 'fire', name: 'Thunder Bay Fire', address: '350 Waterloo St S, Thunder Bay, ON', phone: '807-625-2582', city: 'Thunder Bay' },
+    { id: 11, type: 'fire', name: 'Winnipeg Fire', address: '185 King St, Winnipeg, MB', phone: '204-986-6111', city: 'Winnipeg' },
+    { id: 12, type: 'fire', name: 'Regina Fire', address: '2005 Ottawa St, Regina, SK', phone: '306-777-7830', city: 'Regina' },
+    
+    // Carpool Locations
+    { id: 13, type: 'carpool', name: 'Cobourg Carpool Lot', address: 'Hwy 401 & Division St, Cobourg, ON', phone: 'N/A', city: 'Cobourg' },
+    { id: 14, type: 'carpool', name: 'Thunder Bay Park & Ride', address: 'Hwy 11/17, Thunder Bay, ON', phone: 'N/A', city: 'Thunder Bay' },
+    { id: 15, type: 'carpool', name: 'Winnipeg Park & Ride', address: 'Hwy 1 & Pembina, Winnipeg, MB', phone: 'N/A', city: 'Winnipeg' },
+    
+    // Other Important
+    { id: 16, type: 'other', name: 'Thunder Bay Regional Hospital', address: '980 Oliver Rd, Thunder Bay, ON', phone: '807-684-6000', city: 'Thunder Bay' },
+    { id: 17, type: 'other', name: 'Health Sciences Centre Winnipeg', address: '820 Sherbrook St, Winnipeg, MB', phone: '204-787-3661', city: 'Winnipeg' },
+    { id: 18, type: 'other', name: 'Regina General Hospital', address: '1440 14th Ave, Regina, SK', phone: '306-766-4444', city: 'Regina' }
+];
+
+function displayImportantLocations() {
+    const container = document.getElementById('locations-grid');
+    if (!container) return;
+    
+    const locationIcons = {
+        police: '🚓',
+        fire: '🚒',
+        carpool: '🚗',
+        other: '📍'
+    };
+    
+    container.innerHTML = importantLocations.map(loc => `
+        <div class="location-card" data-type="${loc.type}">
+            <div class="location-header">
+                <span class="location-icon">${locationIcons[loc.type]}</span>
+                <span class="location-name">${loc.name}</span>
+            </div>
+            <div class="location-address">${loc.address}</div>
+            <div class="location-phone">${loc.phone}</div>
+        </div>
+    `).join('');
+}
+
+function filterLocations(type, event) {
+    const cards = document.querySelectorAll('.location-card');
+    const buttons = document.querySelectorAll('.location-filters .filter-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    cards.forEach(card => {
+        if (type === 'all' || card.dataset.type === type) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// ===== Hourly Weather =====
+function generateHourlyWeather() {
+    const container = document.getElementById('hourly-weather-grid');
+    if (!container) return;
+    
+    const hours = 24;
+    const weatherConditions = [
+        { icon: '☀️', condition: 'Clear' },
+        { icon: '⛅', condition: 'Partly Cloudy' },
+        { icon: '☁️', condition: 'Cloudy' },
+        { icon: '🌧️', condition: 'Rain' },
+        { icon: '❄️', condition: 'Snow' }
+    ];
+    
+    let html = '';
+    const now = new Date();
+    
+    for (let i = 0; i < hours; i++) {
+        const hour = new Date(now.getTime() + i * 60 * 60 * 1000);
+        const hourLabel = hour.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+        const temp = Math.floor(Math.random() * 15) - 10; // -10 to +5
+        const weatherIndex = Math.floor(Math.random() * weatherConditions.length);
+        const weather = weatherConditions[weatherIndex];
+        
+        html += `
+            <div class="hourly-weather-card">
+                <div class="hour-label">${hourLabel}</div>
+                <div class="hour-icon">${weather.icon}</div>
+                <div class="hour-temp">${temp}°C</div>
+                <div class="hour-condition">${weather.condition}</div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+let weatherNotificationInterval = null;
+
+function toggleWeatherNotifications(enabled) {
+    if (enabled && 'Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showNotification('Weather notifications enabled! You\'ll receive hourly updates.', 'success');
+                // Schedule weather notifications
+                scheduleWeatherNotifications();
+            }
+        });
+    } else {
+        showNotification('Weather notifications disabled', 'info');
+        // Clear interval if exists
+        if (weatherNotificationInterval) {
+            clearInterval(weatherNotificationInterval);
+            weatherNotificationInterval = null;
+        }
+    }
+    localStorage.setItem('weatherNotifications', enabled);
+}
+
+function scheduleWeatherNotifications() {
+    // Clear existing interval if any
+    if (weatherNotificationInterval) {
+        clearInterval(weatherNotificationInterval);
+    }
+    
+    // Check weather every hour and notify if conditions change
+    weatherNotificationInterval = setInterval(() => {
+        const enabled = localStorage.getItem('weatherNotifications') === 'true';
+        if (enabled) {
+            const randomCondition = ['Clear skies ahead', 'Snow expected in 2 hours', 'Temperature dropping', 'Winds picking up'][Math.floor(Math.random() * 4)];
+            showNotification(randomCondition, 'weather');
+        }
+    }, 60 * 60 * 1000); // Every hour
+}
+
+// ===== Appointments =====
+let appointments = [];
+
+function loadAppointments() {
+    const saved = localStorage.getItem('appointments');
+    if (saved) {
+        appointments = JSON.parse(saved);
+    }
+    displayAppointments();
+}
+
+function saveAppointments() {
+    localStorage.setItem('appointments', JSON.stringify(appointments));
+}
+
+function displayAppointments() {
+    const container = document.getElementById('appointment-items');
+    if (!container) return;
+    
+    if (appointments.length === 0) {
+        container.innerHTML = '<p class="empty-state">No appointments scheduled</p>';
+        return;
+    }
+    
+    container.innerHTML = appointments.map(apt => `
+        <div class="appointment-item">
+            <div class="appointment-info">
+                <div class="appointment-task">${apt.task}</div>
+                <div class="appointment-date-display">${new Date(apt.date).toLocaleDateString()}</div>
+            </div>
+            <button class="remove-item-btn" onclick="removeAppointment(${apt.id})">Remove</button>
+        </div>
+    `).join('');
+}
+
+function addAppointment() {
+    const taskInput = document.getElementById('new-appointment');
+    const dateInput = document.getElementById('appointment-date');
+    
+    const task = taskInput.value.trim();
+    const date = dateInput.value;
+    
+    if (!task || !date) {
+        alert('Please enter both task and date');
+        return;
+    }
+    
+    const newId = appointments.length > 0 ? Math.max(...appointments.map(a => a.id)) + 1 : 1;
+    appointments.push({ id: newId, task, date });
+    
+    saveAppointments();
+    displayAppointments();
+    
+    taskInput.value = '';
+    dateInput.value = '';
+    
+    showNotification('Appointment added', 'success');
+}
+
+function removeAppointment(id) {
+    if (confirm('Remove this appointment?')) {
+        appointments = appointments.filter(a => a.id !== id);
+        saveAppointments();
+        displayAppointments();
+        showNotification('Appointment removed', 'info');
+    }
+}
+
+// ===== Navigation Widget Overlay =====
+function toggleNavWidget() {
+    const widget = document.getElementById('nav-widget');
+    if (widget.classList.contains('active')) {
+        widget.classList.remove('active');
+    } else {
+        widget.classList.add('active');
+    }
+}
+
+// ===== Notification System =====
+let notifications = [];
+let notificationId = 0;
+
+function showNotification(message, type = 'info') {
+    const id = notificationId++;
+    const timestamp = new Date();
+    
+    notifications.unshift({ id, message, type, timestamp });
+    
+    // Update badge count
+    updateNotificationBadge();
+    
+    // Add to notification panel
+    updateNotificationPanel();
+    
+    // Browser notification if enabled - note: icon parameter should be a URL to an image file
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Cross-Canada Dashboard', {
+            body: message
+        });
+    }
+}
+
+function updateNotificationBadge() {
+    const badge = document.getElementById('notification-count');
+    if (badge) {
+        badge.textContent = notifications.length;
+    }
+}
+
+function updateNotificationPanel() {
+    const list = document.getElementById('notification-list');
+    if (!list) return;
+    
+    if (notifications.length === 0) {
+        list.innerHTML = '<p class="empty-state">No new notifications</p>';
+        return;
+    }
+    
+    list.innerHTML = notifications.map(notif => `
+        <div class="notification-item ${notif.type}">
+            <div class="notification-time">${notif.timestamp.toLocaleTimeString()}</div>
+            <div class="notification-message">${notif.message}</div>
+        </div>
+    `).join('');
+}
+
+function showNotifications() {
+    const panel = document.getElementById('notification-panel');
+    panel.classList.add('active');
+}
+
+function closeNotifications() {
+    const panel = document.getElementById('notification-panel');
+    panel.classList.remove('active');
+}
+
+// ===== Initialize All New Features =====
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        loadDriverData();
+        loadChecklistItems();
+        loadEmergencyContacts();
+        displayImportantLocations();
+        generateHourlyWeather();
+        loadAppointments();
+        
+        // Check if weather notifications are enabled
+        const weatherNotifEnabled = localStorage.getItem('weatherNotifications') === 'true';
+        if (weatherNotifEnabled) {
+            document.getElementById('weather-notifications').checked = true;
+            scheduleWeatherNotifications();
+        }
+        
+        // Show welcome notification
+        setTimeout(() => {
+            showNotification('Welcome to your enhanced trip dashboard!', 'success');
+        }, 2000);
+    }, 1000);
+});

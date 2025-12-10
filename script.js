@@ -1,5 +1,14 @@
 // ===== Cross-Canada Travel Dashboard JavaScript =====
 
+// Constants
+const TRIP_CONFIG = {
+    TARGET_DATE: new Date('2024-12-18T00:00:00'),
+    TOTAL_DISTANCE: 3000, // km
+    FUEL_EFFICIENCY_WINTER: 25, // MPG
+    PRICE_PER_LITER: 1.70, // CAD
+    LITERS_PER_GALLON: 3.785
+};
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     initializeDashboard();
@@ -35,7 +44,7 @@ function initializeDashboard() {
 
 // ===== Countdown Timer =====
 function updateCountdown() {
-    const targetDate = new Date('2024-12-18T00:00:00');
+    const targetDate = TRIP_CONFIG.TARGET_DATE;
     const now = new Date();
     const difference = targetDate - now;
     
@@ -59,7 +68,7 @@ function updateCountdown() {
 function validateDates() {
     const startDate = new Date(document.getElementById('start-date').value);
     const endDate = new Date(document.getElementById('end-date').value);
-    const targetDate = new Date('2024-12-18');
+    const targetDate = TRIP_CONFIG.TARGET_DATE;
     
     if (endDate < startDate) {
         alert('End date cannot be before start date!');
@@ -127,7 +136,7 @@ function toggleDay(dayNumber) {
 // ===== Progress Tracker =====
 function updateProgress() {
     const distanceCovered = parseInt(document.getElementById('distance-covered').value) || 0;
-    const totalDistance = 3000;
+    const totalDistance = TRIP_CONFIG.TOTAL_DISTANCE;
     
     // Validate input
     if (distanceCovered > totalDistance) {
@@ -362,9 +371,9 @@ function updateWeatherData() {
 
 // ===== Gas Price Calculator =====
 function calculateGasCost(distanceTraveled) {
-    const fuelEfficiency = 25; // MPG in winter
-    const pricePerLiter = 1.70; // CAD average
-    const litersPerGallon = 3.785;
+    const fuelEfficiency = TRIP_CONFIG.FUEL_EFFICIENCY_WINTER;
+    const pricePerLiter = TRIP_CONFIG.PRICE_PER_LITER;
+    const litersPerGallon = TRIP_CONFIG.LITERS_PER_GALLON;
     
     const gallonsNeeded = distanceTraveled / 1.60934 / fuelEfficiency;
     const litersNeeded = gallonsNeeded * litersPerGallon;

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cross-Canada Winter Road Trip Dashboard - Cobourg to Melfort">
+    <title>Cross-Canada Journey 🚗 Cobourg → Melfort</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Sortable JS for Drag & Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header fade-in">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="header-title">🚗 Cross-Canada Winter Journey</h1>
+                    <p class="header-subtitle">Cobourg, ON → Melfort, SK</p>
+                </div>
+                <div class="header-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button class="share-btn" onclick="shareTrip()" title="Share Trip">
+                        <span>🔗 Share</span>
+                    </button>
+                    <button class="settings-btn" onclick="openSettings()" title="Settings">
+                        <span>⚙️</span>
+                    </button>
+                </div>
+                <div class="header-meta">
+                    <span class="badge">3,000 km</span>
+                    <span class="badge">5 Days</span>
+                    <span class="badge">2019 Buick Encore</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Settings</h2>
+                    <button class="close-modal" onclick="closeSettings()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label for="theme-select">Theme:</label>
+                        <select id="theme-select" onchange="changeTheme(this.value)">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="units-select">Units:</label>
+                        <select id="units-select" onchange="changeUnits(this.value)">
+                            <option value="metric">Metric (km, L, °C)</option>
+                            <option value="imperial">Imperial (mi, gal, °F)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="notifications-toggle" onchange="toggleNotifications(this.checked)">
+                            Enable Notifications
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <button class="btn-primary" onclick="resetDashboard()">Reset Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Selector -->
+        <section class="date-selector fade-in">
+            <div class="widget">
+                <h3>📅 Adjust Trip Dates</h3>
+                <div class="date-inputs">
+                    <div class="input-group">
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" id="start-date" value="2024-12-10">
+                    </div>
+                    <div class="input-group">
+                        <label for="end-date">Target Arrival:</label>
+                        <input type="date" id="end-date" value="2024-12-15">
+                    </div>
+                </div>
+                <div class="days-remaining">
+                    <span id="days-count">Days until Mom's birthday (Dec 18):</span>
+                    <span class="countdown" id="countdown">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Map Widget -->
+        <section class="map-section fade-in">
+            <div class="widget full-width" id="map-widget">
+                <div class="widget-header">
+                    <h3>🗺️ Interactive Route Map</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('map-widget')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div id="route-map" style="height: 500px; border-radius: 0.5rem;"></div>
+                    <div class="map-controls">
+                        <button class="btn-secondary" onclick="showAlternativeRoutes()">Show Alternative Routes</button>
+                        <button class="btn-secondary" onclick="addWaypoint()">Add Waypoint</button>
+                        <button class="btn-secondary" onclick="calculateETA()">Calculate ETA</button>
+                    </div>
+                    <div id="eta-display" class="eta-info" style="display: none;">
+                        <h4>Estimated Arrival</h4>
+                        <p><strong>ETA:</strong> <span id="eta-time">--:--</span></p>
+                        <p><strong>Delays:</strong> <span id="eta-delays">None</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Weather Widget -->
+        <section class="live-weather-section fade-in">
+            <div class="widget full-width" id="live-weather">
+                <div class="widget-header">
+                    <h3>🌤️ Live Weather & Alerts</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('live-weather')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="weather-alerts" id="weather-alerts">
+                        <div class="alert-loading">Loading weather alerts...</div>
+                    </div>
+                    <div class="live-weather-grid" id="live-weather-grid">
+                        <div class="weather-loading">Fetching live weather data...</div>
+                    </div>
+                    <div class="weather-source">
+                        <small>Data updated every 30 minutes from OpenWeatherMap</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements & Gamification -->
+        <section class="achievements-section fade-in">
+            <div class="widget" id="achievements">
+                <div class="widget-header">
+                    <h3>🏆 Trip Achievements</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('achievements')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="achievements-grid">
+                        <div class="achievement locked" id="achievement-25">
+                            <div class="achievement-icon">🥉</div>
+                            <div class="achievement-info">
+                                <h4>First Quarter</h4>
+                                <p>Complete 25% of journey</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-50">
+                            <div class="achievement-icon">🥈</div>
+                            <div class="achievement-info">
+                                <h4>Halfway Hero</h4>
+                                <p>Reach the 1,500 km mark</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-75">
+                            <div class="achievement-icon">🥇</div>
+                            <div class="achievement-info">
+                                <h4>Almost There</h4>
+                                <p>Complete 75% of journey</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-100">
+                            <div class="achievement-icon">🎂</div>
+                            <div class="achievement-info">
+                                <h4>Birthday Arrival!</h4>
+                                <p>Reach Melfort successfully</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="daily-challenge">
+                        <h4>🎯 Daily Challenge</h4>
+                        <div id="daily-challenge-content">
+                            <p><strong>Today:</strong> <span id="challenge-text">Take a photo at a rest stop and add it to your journal!</span></p>
+                        </div>
+                    </div>
+                    <div class="trivia-section">
+                        <h4>🧠 Province Trivia</h4>
+                        <div id="trivia-question">
+                            <p><strong>Q:</strong> <span id="trivia-q">What is the capital of Saskatchewan?</span></p>
+                            <button class="btn-secondary" onclick="showTriviaAnswer()">Show Answer</button>
+                            <p id="trivia-answer" style="display: none;"><strong>A:</strong> <span id="trivia-a">Regina</span></p>
+                        </div>
+                        <button class="btn-primary" onclick="nextTrivia()">Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid" id="sortable-dashboard">
+            
+            <!-- Trip Overview Widget -->
+            <div class="widget slide-in-left" id="trip-overview">
+                <div class="widget-header">
+                    <h3>🗺️ Trip Overview</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('trip-overview')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="stat-row">
+                        <div class="stat">
+                            <span class="stat-label">Total Distance</span>
+                            <span class="stat-value">3,000 km</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Drive Time</span>
+                            <span class="stat-value">30-32 hrs</span>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat">
+                            <span class="stat-label">Daily Average</span>
+                            <span class="stat-value">600 km</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Route</span>
+                            <span class="stat-value">Trans-Canada Hwy</span>
+                        </div>
+                    </div>
+                    <div class="route-map">
+                        <div class="route-points">
+                            <div class="route-point active">Cobourg, ON</div>
+                            <div class="route-line"></div>
+                            <div class="route-point">Sault Ste. Marie</div>
+                            <div class="route-line"></div>
+                            <div class="route-point">Thunder Bay</div>
+                            <div class="route-line"></div>
+                            <div class="route-point">Winnipeg</div>
+                            <div class="route-line"></div>
+                            <div class="route-point">Regina</div>
+                            <div class="route-line"></div>
+                            <div class="route-point destination">Melfort, SK</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Info Widget -->
+            <div class="widget slide-in-right" id="vehicle-info">
+                <div class="widget-header">
+                    <h3>🚙 Vehicle Status</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('vehicle-info')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="vehicle-card">
+                        <h4>2019 Buick Encore FWD</h4>
+                        <div class="status-grid">
+                            <div class="status-item warning">
+                                <span class="status-icon">⚠️</span>
+                                <span class="status-text">Summer Tires - URGENT: Replace with winter tires!</span>
+                            </div>
+                            <div class="status-item warning">
+                                <span class="status-icon">🛢️</span>
+                                <span class="status-text">Oil: 55% - Change before departure</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-icon">⛽</span>
+                                <span class="status-text">Fuel Economy: 24-26 MPG (winter)</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-icon">🔋</span>
+                                <span class="status-text">Battery Check Required</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Widget -->
+            <div class="widget fade-in" id="weather">
+                <div class="widget-header">
+                    <h3>🌨️ Weather Forecast</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('weather')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="weather-grid">
+                        <div class="weather-day">
+                            <div class="day-name">Day 1-2</div>
+                            <div class="weather-icon">❄️</div>
+                            <div class="temp">-10°C to -15°C</div>
+                            <div class="condition">Snow Squalls (Northern ON)</div>
+                        </div>
+                        <div class="weather-day">
+                            <div class="day-name">Day 3-4</div>
+                            <div class="weather-icon">🌬️</div>
+                            <div class="temp">-15°C to -20°C</div>
+                            <div class="condition">High Winds (Prairies)</div>
+                        </div>
+                        <div class="weather-day">
+                            <div class="day-name">Day 5</div>
+                            <div class="weather-icon">☁️</div>
+                            <div class="temp">-20°C to -25°C</div>
+                            <div class="condition">Cold & Clear (SK)</div>
+                        </div>
+                    </div>
+                    <div class="weather-alert">
+                        ⚠️ Monitor 511.ca and local weather apps daily. Avoid night driving.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Itinerary Widget -->
+            <div class="widget slide-in-left full-width" id="itinerary">
+                <div class="widget-header">
+                    <h3>📍 5-Day Itinerary</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('itinerary')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="itinerary-container">
+                        <div class="day-card">
+                            <div class="day-header" onclick="toggleDay(1)">
+                                <div class="day-title">
+                                    <span class="day-number">Day 1</span>
+                                    <span class="day-route">Cobourg → Sault Ste. Marie</span>
+                                </div>
+                                <span class="day-distance">700 km • 7-8 hrs</span>
+                            </div>
+                            <div class="day-details" id="day-1">
+                                <p><strong>Route:</strong> Hwy 401 W → Hwy 400 N → Hwy 69 N → Hwy 17 W</p>
+                                <p><strong>Highlights:</strong> Easy start, watch for GTA traffic</p>
+                                <p><strong>Gas Stop:</strong> Onaping Falls Esso (Hwy 69, ~450 km)</p>
+                                <p><strong>Accommodation:</strong> Holiday Inn Waterfront (~$180)</p>
+                                <div class="tips">💡 Depart early (7 AM), Finnish sauna nearby for relaxation</div>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-header" onclick="toggleDay(2)">
+                                <div class="day-title">
+                                    <span class="day-number">Day 2</span>
+                                    <span class="day-route">Sault Ste. Marie → Thunder Bay</span>
+                                </div>
+                                <span class="day-distance">700 km • 7-8 hrs</span>
+                            </div>
+                            <div class="day-details" id="day-2">
+                                <p><strong>Route:</strong> Hwy 17 W along Lake Superior</p>
+                                <p><strong>Highlights:</strong> Stunning lake views, exposed to lake-effect snow</p>
+                                <p><strong>Gas Stop:</strong> Hodder Ave Petro-Canada (Hwy 17)</p>
+                                <p><strong>Accommodation:</strong> Best Western Plus Lakehead (~$160)</p>
+                                <div class="tips">💡 Visit Kakabeka Falls (frozen wonder), break every 2 hours</div>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-header" onclick="toggleDay(3)">
+                                <div class="day-title">
+                                    <span class="day-number">Day 3</span>
+                                    <span class="day-route">Thunder Bay → Winnipeg</span>
+                                </div>
+                                <span class="day-distance">700 km • 7 hrs</span>
+                            </div>
+                            <div class="day-details" id="day-3">
+                                <p><strong>Route:</strong> Hwy 17 W to Kenora → MB Hwy 1 W</p>
+                                <p><strong>Highlights:</strong> Cross into Manitoba, prairies open up</p>
+                                <p><strong>Gas Stops:</strong> Kenora Lakeview Esso, Winnipeg Pembina Hwy Shell</p>
+                                <p><strong>Accommodation:</strong> Fort Garry Hotel (~$200)</p>
+                                <div class="tips">💡 Explore The Forks market, winter lights & fire pits</div>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-header" onclick="toggleDay(4)">
+                                <div class="day-title">
+                                    <span class="day-number">Day 4</span>
+                                    <span class="day-route">Winnipeg → Regina</span>
+                                </div>
+                                <span class="day-distance">570 km • 5-6 hrs</span>
+                            </div>
+                            <div class="day-details" id="day-4">
+                                <p><strong>Route:</strong> Hwy 1 W through flat farmlands</p>
+                                <p><strong>Highlights:</strong> Windy, watch for icy patches</p>
+                                <p><strong>Gas Stops:</strong> Brandon 18th St. Co-op, Regina Albert St. Esso</p>
+                                <p><strong>Accommodation:</strong> Delta Hotels (~$190)</p>
+                                <div class="tips">💡 Wascana Park skating rink if weather permits</div>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-header" onclick="toggleDay(5)">
+                                <div class="day-title">
+                                    <span class="day-number">Day 5</span>
+                                    <span class="day-route">Regina → Melfort</span>
+                                </div>
+                                <span class="day-distance">280 km • 3 hrs</span>
+                            </div>
+                            <div class="day-details" id="day-5">
+                                <p><strong>Route:</strong> Hwy 11 N - Quick final leg</p>
+                                <p><strong>Highlights:</strong> Arrive early, celebrate with Mom!</p>
+                                <p><strong>Gas Stop:</strong> Humboldt Hwy 5 Co-op (final top-up)</p>
+                                <p><strong>Destination:</strong> Melfort, Saskatchewan 🎉</p>
+                                <div class="tips celebration">🎂 Mom's birthday is December 18th!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fuel Calculator Widget -->
+            <div class="widget slide-in-right" id="fuel">
+                <div class="widget-header">
+                    <h3>⛽ Fuel Calculator</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('fuel')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="fuel-stats">
+                        <div class="fuel-item">
+                            <span class="fuel-label">Total Fuel Needed:</span>
+                            <span class="fuel-value">265-295 L</span>
+                        </div>
+                        <div class="fuel-item">
+                            <span class="fuel-label">Estimated Cost:</span>
+                            <span class="fuel-value highlight">$425-530 CAD</span>
+                        </div>
+                        <div class="fuel-item">
+                            <span class="fuel-label">Fill-ups Required:</span>
+                            <span class="fuel-value">6-7 stops</span>
+                        </div>
+                        <div class="fuel-item">
+                            <span class="fuel-label">Tank Capacity:</span>
+                            <span class="fuel-value">~50 L</span>
+                        </div>
+                    </div>
+                    <div class="fuel-tip">
+                        💡 Never drop below 1/2 tank in winter. Fuel up every 300-400 km.
+                    </div>
+                    <div class="gas-stations">
+                        <h4>Gas Station Stops:</h4>
+                        <ol>
+                            <li>Cobourg: Esso at 401/Division St.</li>
+                            <li>Sudbury: Onaping Falls Esso (Hwy 69)</li>
+                            <li>Sault Ste. Marie: Parkway Esso (Hwy 17)</li>
+                            <li>Thunder Bay: Hodder Ave Petro-Canada</li>
+                            <li>Kenora: Lakeview Esso (Hwy 17/1)</li>
+                            <li>Winnipeg: Pembina Hwy Shell (Hwy 1)</li>
+                            <li>Brandon: 18th St. Co-op (Hwy 1)</li>
+                            <li>Regina: Albert St. Esso (Hwy 1/11)</li>
+                            <li>Humboldt: Hwy 5 Co-op (final stop)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Tracker Widget -->
+            <div class="widget fade-in" id="budget">
+                <div class="widget-header">
+                    <h3>💰 Budget Tracker</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('budget')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="budget-breakdown">
+                        <div class="budget-row">
+                            <span class="budget-category">⛽ Fuel</span>
+                            <span class="budget-amount">$425-530</span>
+                        </div>
+                        <div class="budget-row">
+                            <span class="budget-category">🏨 Accommodation (4 nights)</span>
+                            <span class="budget-amount">$670-820</span>
+                        </div>
+                        <div class="budget-row">
+                            <span class="budget-category">🍔 Food & Meals</span>
+                            <span class="budget-amount">$200-300</span>
+                        </div>
+                        <div class="budget-row">
+                            <span class="budget-category">🔧 Emergency/Misc</span>
+                            <span class="budget-amount">$100-150</span>
+                        </div>
+                        <div class="budget-row total">
+                            <span class="budget-category"><strong>Total Estimated</strong></span>
+                            <span class="budget-amount"><strong>$1,395-1,800 CAD</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food & Donation Centers Widget -->
+            <div class="widget slide-in-left" id="food-centers">
+                <div class="widget-header">
+                    <h3>🍲 Food Banks & Meal Programs</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('food-centers')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="location-list">
+                        <div class="location-item">
+                            <h4>Ontario</h4>
+                            <ul>
+                                <li><strong>Sudbury Food Bank:</strong> 1994 Paris St. (drop-offs)</li>
+                                <li><strong>Thunder Bay Food Bank:</strong> 2 Cumberland St. S. (meals Wed/Fri)</li>
+                            </ul>
+                        </div>
+                        <div class="location-item">
+                            <h4>Manitoba</h4>
+                            <ul>
+                                <li><strong>Kenora Food Bank:</strong> 310 Matheson Dr.</li>
+                                <li><strong>Winnipeg Harvest:</strong> 1089 Winnipeg Ave. (daily suppers)</li>
+                                <li><strong>Brandon Neighbourhood Renewal:</strong> 12th St. (meals Tue/Thu)</li>
+                            </ul>
+                        </div>
+                        <div class="location-item">
+                            <h4>Saskatchewan</h4>
+                            <ul>
+                                <li><strong>Regina Food Bank:</strong> 506 Dewdney Ave. E. (Mon-Wed meals)</li>
+                                <li><strong>Melfort Food Bank:</strong> 106 Burrows Ave. W.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="donation-tip">
+                        💝 Call ahead for hours. Canned goods & non-perishables welcome!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Checklist Widget -->
+            <div class="widget slide-in-right full-width" id="safety">
+                <div class="widget-header">
+                    <h3>🛡️ Safety Checklist & Winter Tips</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('safety')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="safety-sections">
+                        <div class="safety-section">
+                            <h4>🚗 Vehicle Preparation</h4>
+                            <ul class="checklist">
+                                <li><input type="checkbox" id="safety-1"> <label for="safety-1">Install winter tires (all 4 wheels, studded if possible)</label></li>
+                                <li><input type="checkbox" id="safety-2"> <label for="safety-2">Change oil (currently at 55%)</label></li>
+                                <li><input type="checkbox" id="safety-3"> <label for="safety-3">Check battery & antifreeze</label></li>
+                                <li><input type="checkbox" id="safety-4"> <label for="safety-4">Test brakes & spare tire</label></li>
+                                <li><input type="checkbox" id="safety-5"> <label for="safety-5">Fill windshield fluid (de-icer type)</label></li>
+                            </ul>
+                        </div>
+                        <div class="safety-section">
+                            <h4>📱 Technology & Navigation</h4>
+                            <ul class="checklist">
+                                <li><input type="checkbox" id="safety-6"> <label for="safety-6">Download paper maps/road atlas</label></li>
+                                <li><input type="checkbox" id="safety-7"> <label for="safety-7">Charge power bank & phone</label></li>
+                                <li><input type="checkbox" id="safety-8"> <label for="safety-8">Install weather/traffic apps (511.ca, Waze)</label></li>
+                                <li><input type="checkbox" id="safety-9"> <label for="safety-9">CB radio or satellite SOS device</label></li>
+                            </ul>
+                        </div>
+                        <div class="safety-section">
+                            <h4>🌨️ Winter Driving Tips</h4>
+                            <ul class="tips-list">
+                                <li>Drive 80-100 km/h max, increase following distance 3-4x</li>
+                                <li>Depart early (7 AM) to beat sunset (~4 PM)</li>
+                                <li>Gentle acceleration/braking - no sudden moves</li>
+                                <li>Watch for moose crossings (Northern ON) & high winds (Prairies)</li>
+                                <li>If stranded: Stay in car, run engine 10 min/hr with clear exhaust</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 25 Essentials Widget -->
+            <div class="widget fade-in" id="essentials">
+                <div class="widget-header">
+                    <h3>🎒 Top 25 Essential Items</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('essentials')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="essentials-grid">
+                        <div class="essential-category">
+                            <h4>🚙 Vehicle/Warmth</h4>
+                            <ol>
+                                <li>Winter emergency kit (blankets, sleeping bags, flares, shovel, tow rope)</li>
+                                <li>Jumper cables & portable battery</li>
+                                <li>Ice scraper/snow brush</li>
+                                <li>Tire chains (if no winter tires)</li>
+                                <li>Full toolkit (jack, wrench)</li>
+                            </ol>
+                        </div>
+                        <div class="essential-category">
+                            <h4>🧭 Navigation/Safety</h4>
+                            <ol start="6">
+                                <li>Paper maps/road atlas</li>
+                                <li>Fully charged phone + car charger + power bank</li>
+                                <li>CB radio or Garmin inReach (satellite SOS)</li>
+                                <li>First-aid kit (bandages, meds, thermal wraps)</li>
+                                <li>Headlamp/flashlight w/ extra batteries</li>
+                            </ol>
+                        </div>
+                        <div class="essential-category">
+                            <h4>🍔 Food/Water</h4>
+                            <ol start="11">
+                                <li>Non-perishable snacks (nuts, bars - 3 days' worth)</li>
+                                <li>Bottled water (10L min, freeze some for coolers)</li>
+                                <li>Portable stove + fuel (for hot meals if stuck)</li>
+                                <li>High-energy gels for quick boosts</li>
+                            </ol>
+                        </div>
+                        <div class="essential-category">
+                            <h4>🧥 Clothing/Health</h4>
+                            <ol start="15">
+                                <li>Layered winter clothes (parka, gloves, hats, wool socks - 2 sets)</li>
+                                <li>Backup boots (waterproof)</li>
+                                <li>Hand/feet warmers (20+ packs)</li>
+                                <li>Medications + prescriptions (extra)</li>
+                                <li>Face masks/sanitizer</li>
+                            </ol>
+                        </div>
+                        <div class="essential-category">
+                            <h4>🔧 Miscellaneous</h4>
+                            <ol start="20">
+                                <li>Cash ($200+ small bills for rural spots)</li>
+                                <li>ID/docs (insurance, registration)</li>
+                                <li>Duct tape/multi-tool</li>
+                                <li>Trash bags (for warmth/messes)</li>
+                                <li>Books/games for downtime</li>
+                                <li>Pet supplies if applicable</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 100 Nice-to-Haves Widget -->
+            <div class="widget slide-in-left full-width" id="nice-to-haves">
+                <div class="widget-header">
+                    <h3>✨ Top 100 Nice-to-Have Items</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('nice-to-haves')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="nice-to-haves-grid">
+                        <div class="nth-category">
+                            <h4>🎵 Entertainment (20 items)</h4>
+                            <ol>
+                                <li>Podcasts downloaded (e.g., "Stuff You Should Know")</li>
+                                <li>Audiobooks (winter tales like "The Shining")</li>
+                                <li>Road trip playlist (Canadian artists: Arcade Fire, The Tragically Hip)</li>
+                                <li>Bluetooth speaker</li>
+                                <li>Travel journal</li>
+                                <li>Cards/deck of Uno</li>
+                                <li>Travel Scrabble</li>
+                                <li>Karaoke mic (car-safe)</li>
+                                <li>Binoculars for wildlife</li>
+                                <li>Star-gazing app</li>
+                                <li>Funny car games book</li>
+                                <li>Downloaded movies (Netflix offline)</li>
+                                <li>Earplugs/eye mask for naps</li>
+                                <li>Harmonica</li>
+                                <li>Puzzle book</li>
+                                <li>Motivational quotes sticky notes</li>
+                                <li>Photo album of home</li>
+                                <li>Virtual tour apps (for landmarks)</li>
+                                <li>Jokes book</li>
+                                <li>White noise machine</li>
+                            </ol>
+                        </div>
+                        <div class="nth-category">
+                            <h4>☕ Comfort/Food (25 items)</h4>
+                            <ol start="21">
+                                <li>Neck pillows (2)</li>
+                                <li>Heated seat cushions</li>
+                                <li>Lumbar supports</li>
+                                <li>Car organizer (for snacks)</li>
+                                <li>Reusable coffee mugs (2)</li>
+                                <li>Insulated tumblers</li>
+                                <li>Picnic blanket</li>
+                                <li>Portable cooler (20L)</li>
+                                <li>Hot cocoa packets</li>
+                                <li>Trail mix variety pack</li>
+                                <li>Fruit leather</li>
+                                <li>Cheese sticks</li>
+                                <li>Jerky assortment</li>
+                                <li>Herbal teas</li>
+                                <li>Energy chews</li>
+                                <li>Chocolate stash</li>
+                                <li>Gum/mints</li>
+                                <li>Wet wipes</li>
+                                <li>Hand lotion (dry air)</li>
+                                <li>Lip balm</li>
+                                <li>Compression socks</li>
+                                <li>Seat warmers (plug-in)</li>
+                                <li>Foot hammock</li>
+                                <li>Aromatherapy diffuser</li>
+                                <li>Massage ball</li>
+                            </ol>
+                        </div>
+                        <div class="nth-category">
+                            <h4>🔧 Practical/Utility (25 items)</h4>
+                            <ol start="46">
+                                <li>Extra phone cables</li>
+                                <li>Universal adapter</li>
+                                <li>Reusable shopping bags</li>
+                                <li>Laundry bag</li>
+                                <li>Ziploc bags (assorted)</li>
+                                <li>Sewing kit</li>
+                                <li>Nail clippers</li>
+                                <li>Tissues</li>
+                                <li>Sunscreen (snow glare)</li>
+                                <li>Bug spray (unlikely but)</li>
+                                <li>Compass</li>
+                                <li>Whistle</li>
+                                <li>Mirror (signaling)</li>
+                                <li>Rope/paracord</li>
+                                <li>Lighter/matches (waterproof)</li>
+                                <li>Batteries (AA/AAA)</li>
+                                <li>Extension cord</li>
+                                <li>Trash can (car)</li>
+                                <li>Window shades</li>
+                                <li>Car vacuum (mini)</li>
+                                <li>Air freshener</li>
+                                <li>Fuel additive (winter blend)</li>
+                                <li>Windshield fluid (de-icer)</li>
+                                <li>Tire pressure gauge</li>
+                                <li>OBD-II scanner (basic)</li>
+                            </ol>
+                        </div>
+                        <div class="nth-category">
+                            <h4>💑 Personal/Partner Touches (30 items)</h4>
+                            <ol start="71">
+                                <li>Matching hoodies</li>
+                                <li>Scented candles (hotel use)</li>
+                                <li>Bath salts</li>
+                                <li>Face masks (skincare)</li>
+                                <li>Hair ties/brush</li>
+                                <li>Toothbrush covers</li>
+                                <li>Deodorant (2)</li>
+                                <li>Perfume samples</li>
+                                <li>Jewelry pouch</li>
+                                <li>Reading glasses</li>
+                                <li>Earbuds (pair)</li>
+                                <li>Fitness tracker chargers</li>
+                                <li>Sleep aids (melatonin)</li>
+                                <li>Allergy meds</li>
+                                <li>Vitamins</li>
+                                <li>Journal prompts for couples</li>
+                                <li>Love notes (hide in glovebox)</li>
+                                <li>Shared photo keychain</li>
+                                <li>Essential oils (lavender)</li>
+                                <li>Heated blanket (12V)</li>
+                                <li>Slippers</li>
+                                <li>Neck gaiter (2)</li>
+                                <li>Gloves liners</li>
+                                <li>Beanie hats</li>
+                                <li>Scarves</li>
+                                <li>Backup undies/socks (3 days)</li>
+                                <li>Pajamas</li>
+                                <li>Towels (microfiber)</li>
+                                <li>Yoga mat (stretches)</li>
+                                <li>Gratitude jar (notes for the road)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contacts Widget -->
+            <div class="widget fade-in" id="emergency">
+                <div class="widget-header">
+                    <h3>🚨 Emergency Contacts</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('emergency')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="contact-list">
+                        <div class="contact-item urgent">
+                            <strong>Emergency:</strong> 911
+                        </div>
+                        <div class="contact-item">
+                            <strong>CAA Road Assistance:</strong> 1-800-222-4357
+                        </div>
+                        <div class="contact-item">
+                            <strong>Ontario 511:</strong> Call 511 or visit 511on.ca
+                        </div>
+                        <div class="contact-item">
+                            <strong>Manitoba 511:</strong> Call 511 or visit mb511.ca
+                        </div>
+                        <div class="contact-item">
+                            <strong>Saskatchewan 511:</strong> Call 511 or visit saskatchewan.ca/511
+                        </div>
+                        <div class="contact-item">
+                            <strong>Weather Line:</strong> 1-800-463-4311
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Tracker Widget -->
+            <div class="widget slide-in-right" id="progress">
+                <div class="widget-header">
+                    <h3>📊 Trip Progress Tracker</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('progress')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-controls">
+                            <label for="distance-covered">Distance Covered (km):</label>
+                            <input type="number" id="distance-covered" min="0" max="3000" value="0" step="50" onchange="updateProgress()">
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Completed:</span>
+                                <span class="stat-value" id="distance-display">0 km</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Remaining:</span>
+                                <span class="stat-value" id="remaining-display">3,000 km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Trip Cost Analysis Widget -->
+        <section class="cost-analysis-section fade-in">
+            <div class="widget full-width" id="cost-analysis">
+                <div class="widget-header">
+                    <h3>📈 Trip Cost Analysis</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('cost-analysis')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="cost-charts">
+                        <div class="cost-chart">
+                            <canvas id="cost-breakdown-chart"></canvas>
+                        </div>
+                        <div class="cost-stats">
+                            <div class="stat-card">
+                                <h4>Projected Total</h4>
+                                <p class="stat-value">$<span id="projected-cost">1,600</span></p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Actual Spent</h4>
+                                <p class="stat-value">$<span id="actual-cost">0</span></p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Remaining Budget</h4>
+                                <p class="stat-value">$<span id="remaining-budget">1,600</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="expense-tracker">
+                        <h4>Add Expense</h4>
+                        <div class="expense-form">
+                            <input type="text" id="expense-desc" placeholder="Description">
+                            <input type="number" id="expense-amount" placeholder="Amount ($)">
+                            <select id="expense-category">
+                                <option value="fuel">Fuel</option>
+                                <option value="accommodation">Accommodation</option>
+                                <option value="food">Food</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <button class="btn-primary" onclick="addExpense()">Add</button>
+                        </div>
+                        <div id="expense-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rest Areas & Attractions Widget -->
+        <section class="rest-areas-section fade-in">
+            <div class="widget full-width" id="rest-areas">
+                <div class="widget-header">
+                    <h3>🏞️ Rest Areas & Attractions</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('rest-areas')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="amenities-filter">
+                        <button class="filter-btn active" onclick="filterAmenities('all')">All</button>
+                        <button class="filter-btn" onclick="filterAmenities('rest')">Rest Stops</button>
+                        <button class="filter-btn" onclick="filterAmenities('attractions')">Attractions</button>
+                        <button class="filter-btn" onclick="filterAmenities('food')">Food</button>
+                    </div>
+                    <div class="amenities-list" id="amenities-list">
+                        <div class="amenity-card" data-type="rest">
+                            <h4>🚻 ONroute Barrie North</h4>
+                            <p class="amenity-location">Hwy 400 North, ~450 km</p>
+                            <p class="amenity-features">✓ Restrooms ✓ Tim Hortons ✓ EV Charging ✓ WiFi</p>
+                            <button class="btn-secondary" onclick="addToFavorites('barrie-rest')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>❄️ Kakabeka Falls</h4>
+                            <p class="amenity-location">Near Thunder Bay, ~1,400 km</p>
+                            <p class="amenity-features">Beautiful frozen waterfall • 30 min detour</p>
+                            <button class="btn-secondary" onclick="addToFavorites('kakabeka')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>🎆 The Forks</h4>
+                            <p class="amenity-location">Winnipeg, MB, ~2,100 km</p>
+                            <p class="amenity-features">Winter market • Fire pits • Food vendors</p>
+                            <button class="btn-secondary" onclick="addToFavorites('the-forks')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>⛸️ Wascana Park</h4>
+                            <p class="amenity-location">Regina, SK, ~2,700 km</p>
+                            <p class="amenity-features">Ice skating • Walking trails • Photo ops</p>
+                            <button class="btn-secondary" onclick="addToFavorites('wascana')">⭐ Favorite</button>
+                        </div>
+                    </div>
+                    <div class="favorites-section">
+                        <h4>⭐ Your Favorites</h4>
+                        <div id="favorites-list">
+                            <p class="empty-state">No favorites yet. Click the star to add stops!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>🚗 Safe travels! Focus on the journey, celebrate small wins.</p>
+                <p>If weather worsens, pivot without guilt. You've got this for Mom! 💝</p>
+                <p class="footer-note">Dashboard created for the Cobourg → Melfort winter journey • December 2024</p>
+                <p class="footer-note">Enhanced with live data, interactive features, and gamification</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Chart.js for Cost Analysis -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

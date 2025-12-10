@@ -1247,6 +1247,153 @@ body[data-theme="light"] select {
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* ===== Start Trip Modal Styles ===== */
+.driver-selection {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.driver-select-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.driver-select-btn .driver-icon {
+    font-size: 2rem;
+}
+
+.driver-select-btn .driver-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.driver-select-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+.driver-select-btn.selected {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.modal-actions button {
+    flex: 1;
+    min-width: 120px;
+}
+
+.btn-large {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1.125rem;
+}
+
+.date-input-modal {
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* ===== Trip Status Banner ===== */
+.trip-status-banner {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-md);
+}
+
+.trip-status-banner .status-icon {
+    font-size: 1.5rem;
+}
+
+.trip-status-banner .status-text {
+    font-weight: 600;
+    flex: 1;
+    min-width: 200px;
+}
+
+.trip-status-banner .current-driver {
+    font-weight: 600;
+    color: var(--accent-color);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+/* ===== Trip Action Buttons ===== */
+.trip-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.btn-start-trip,
+.btn-adjust-trip {
+    flex: 1;
+    min-width: 180px;
+    padding: var(--spacing-md);
+    font-size: 1.125rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.btn-start-trip {
+    background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-start-trip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-adjust-trip {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-adjust-trip:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-color);
+}
+
 /* ===== Map Controls ===== */
 .map-controls {
     display: flex;

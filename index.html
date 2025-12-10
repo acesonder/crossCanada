@@ -116,10 +116,58 @@
             </div>
         </div>
 
+        <!-- Start Trip Modal -->
+        <div id="start-trip-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🚗 Start Your Journey!</h2>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 1.5rem; text-align: center; font-size: 1.125rem;">
+                        Ready to begin your cross-Canada adventure? Let's get some details!
+                    </p>
+                    
+                    <div class="setting-group">
+                        <label for="trip-start-date-modal">What date are you starting?</label>
+                        <input type="date" id="trip-start-date-modal" class="date-input-modal">
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label style="display: block; margin-bottom: 0.5rem;">Who is driving first?</label>
+                        <div class="driver-selection">
+                            <button class="driver-select-btn" id="select-driver-a" onclick="selectStartingDriver('A')">
+                                <span class="driver-icon">🚗</span>
+                                <span class="driver-name">Driver A (London)</span>
+                            </button>
+                            <button class="driver-select-btn" id="select-driver-b" onclick="selectStartingDriver('B')">
+                                <span class="driver-icon">🚙</span>
+                                <span class="driver-name">Driver B (Chance)</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="selected-starting-driver" value="">
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="btn-primary btn-large" onclick="confirmStartTrip()" id="confirm-start-btn">
+                            🚀 Start Trip
+                        </button>
+                        <button class="btn-secondary" onclick="closeStartTripModal()">
+                            Maybe Later
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Date Selector -->
         <section class="date-selector fade-in">
             <div class="widget">
                 <h3>📅 Adjust Trip Dates</h3>
+                <div class="trip-status-banner" id="trip-status-banner" style="display: none;">
+                    <span class="status-icon">🚗</span>
+                    <span class="status-text" id="trip-status-text">Trip not started</span>
+                    <span class="current-driver" id="current-driver-display"></span>
+                </div>
                 <div class="date-inputs">
                     <div class="input-group">
                         <label for="start-date">Start Date:</label>
@@ -129,6 +177,14 @@
                         <label for="end-date">Target Arrival:</label>
                         <input type="date" id="end-date" value="2024-12-15">
                     </div>
+                </div>
+                <div class="trip-actions">
+                    <button class="btn-primary btn-start-trip" id="start-trip-btn" onclick="openStartTripModal()">
+                        🚀 Start Trip
+                    </button>
+                    <button class="btn-secondary btn-adjust-trip" id="adjust-trip-btn" onclick="openStartTripModal()" style="display: none;">
+                        ⚙️ Adjust Trip Details
+                    </button>
                 </div>
                 <div class="days-remaining">
                     <span id="days-count">Days until Mom's birthday (Dec 18):</span>

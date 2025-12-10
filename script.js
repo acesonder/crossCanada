@@ -1515,6 +1515,165 @@ function closeNotifications() {
     panel.classList.remove('active');
 }
 
+// ===== Start Trip Modal Functions =====
+function openStartTripModal() {
+    const modal = document.getElementById('start-trip-modal');
+    const tripStarted = localStorage.getItem('tripStarted') === 'true';
+    
+    // Set the date input to current start date
+    const currentStartDate = document.getElementById('start-date').value;
+    document.getElementById('trip-start-date-modal').value = currentStartDate;
+    
+    // If trip already started, pre-select the current driver
+    if (tripStarted) {
+        const currentDriver = localStorage.getItem('currentDriver');
+        if (currentDriver) {
+            selectStartingDriver(currentDriver, true);
+        }
+    } else {
+        // Clear previous selection
+        document.getElementById('selected-starting-driver').value = '';
+        document.querySelectorAll('.driver-select-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeStartTripModal() {
+    const modal = document.getElementById('start-trip-modal');
+    modal.style.display = 'none';
+}
+
+function selectStartingDriver(driverId, skipToggle) {
+    const driverABtn = document.getElementById('select-driver-a');
+    const driverBBtn = document.getElementById('select-driver-b');
+    const hiddenInput = document.getElementById('selected-starting-driver');
+    
+    // Remove selection from both
+    driverABtn.classList.remove('selected');
+    driverBBtn.classList.remove('selected');
+    
+    // Add selection to chosen driver
+    if (driverId === 'A') {
+        driverABtn.classList.add('selected');
+    } else if (driverId === 'B') {
+        driverBBtn.classList.add('selected');
+    }
+    
+    hiddenInput.value = driverId;
+}
+
+function confirmStartTrip() {
+    const selectedDriver = document.getElementById('selected-starting-driver').value;
+    const startDate = document.getElementById('trip-start-date-modal').value;
+    
+    if (!selectedDriver) {
+        alert('Please select a driver before starting the trip!');
+        return;
+    }
+    
+    if (!startDate) {
+        alert('Please select a start date!');
+        return;
+    }
+    
+    // Save trip start information
+    localStorage.setItem('tripStarted', 'true');
+    localStorage.setItem('tripStartDate', startDate);
+    localStorage.setItem('currentDriver', selectedDriver);
+    localStorage.setItem('tripStartTimestamp', new Date().toISOString());
+    
+    // Update the start date input
+    document.getElementById('start-date').value = startDate;
+    validateDates();
+    
+    // Update UI
+    updateTripStatus();
+    
+    // Switch to the selected driver
+    switchDriver(selectedDriver);
+    
+    // Close modal
+    closeStartTripModal();
+    
+    // Show success message
+    const driverName = selectedDriver === 'A' ? 'London' : 'Chance';
+    showNotification(`🚗 Trip started! ${driverName} is driving. Safe travels!`, 'success');
+    
+    // Show milestone for starting
+    showMilestoneMessage(0);
+}
+
+function updateTripStatus() {
+    const tripStarted = localStorage.getItem('tripStarted') === 'true';
+    const banner = document.getElementById('trip-status-banner');
+    const statusText = document.getElementById('trip-status-text');
+    const currentDriverDisplay = document.getElementById('current-driver-display');
+    const startBtn = document.getElementById('start-trip-btn');
+    const adjustBtn = document.getElementById('adjust-trip-btn');
+    
+    if (tripStarted) {
+        const currentDriver = localStorage.getItem('currentDriver');
+        const driverName = currentDriver === 'A' ? 'London' : 'Chance';
+        const startDate = localStorage.getItem('tripStartDate');
+        
+        banner.style.display = 'flex';
+        statusText.textContent = `Trip in progress (Started: ${startDate})`;
+        currentDriverDisplay.textContent = `Current Driver: ${driverName}`;
+        
+        // Hide start button, show adjust button
+        startBtn.style.display = 'none';
+        adjustBtn.style.display = 'inline-block';
+    } else {
+        banner.style.display = 'none';
+        startBtn.style.display = 'inline-block';
+        adjustBtn.style.display = 'none';
+    }
+}
+
+// Custom milestone message for trip start
+function showMilestoneMessage(milestone) {
+    const messages = {
+        0: '🎉 Your journey begins! Stay safe and have fun!',
+        25: '🎉 Quarter of the way there! Keep going!',
+        50: '🎊 Halfway to Mom! You\'re doing great!',
+        75: '🌟 Three-quarters done! Almost there!',
+        100: '🎂 You made it! Happy birthday Mom! 💝'
+    };
+    
+    const message = messages[milestone];
+    if (!message) return;
+    
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        font-weight: 600;
+        font-size: 1.125rem;
+        z-index: 9999;
+        animation: slideInRight 0.5s ease-out;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.5s ease-out';
+        setTimeout(() => toast.remove(), 500);
+    }, 5000);
+}
+
 // ===== Initialize All New Features =====
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
@@ -1524,6 +1683,17 @@ document.addEventListener('DOMContentLoaded', function() {
         displayImportantLocations();
         generateHourlyWeather();
         loadAppointments();
+        
+        // Update trip status on load
+        updateTripStatus();
+        
+        // Check if trip hasn't been started yet and show modal after a delay
+        const tripStarted = localStorage.getItem('tripStarted') === 'true';
+        if (!tripStarted) {
+            setTimeout(() => {
+                openStartTripModal();
+            }, 3000); // Show after 3 seconds on first load
+        }
         
         // Check if weather notifications are enabled
         const weatherNotifEnabled = localStorage.getItem('weatherNotifications') === 'true';

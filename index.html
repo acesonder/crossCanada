@@ -9,14 +9,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Sortable JS for Drag & Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <!-- Header Section -->
         <header class="header fade-in">
             <div class="header-content">
-                <h1 class="header-title">🚗 Cross-Canada Winter Journey</h1>
-                <p class="header-subtitle">Cobourg, ON → Melfort, SK</p>
+                <div class="header-left">
+                    <h1 class="header-title">🚗 Cross-Canada Winter Journey</h1>
+                    <p class="header-subtitle">Cobourg, ON → Melfort, SK</p>
+                </div>
+                <div class="header-controls">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button class="share-btn" onclick="shareTrip()" title="Share Trip">
+                        <span>🔗 Share</span>
+                    </button>
+                    <button class="settings-btn" onclick="openSettings()" title="Settings">
+                        <span>⚙️</span>
+                    </button>
+                </div>
                 <div class="header-meta">
                     <span class="badge">3,000 km</span>
                     <span class="badge">5 Days</span>
@@ -24,6 +41,42 @@
                 </div>
             </div>
         </header>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚙️ Settings</h2>
+                    <button class="close-modal" onclick="closeSettings()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label for="theme-select">Theme:</label>
+                        <select id="theme-select" onchange="changeTheme(this.value)">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                            <option value="auto">Auto</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label for="units-select">Units:</label>
+                        <select id="units-select" onchange="changeUnits(this.value)">
+                            <option value="metric">Metric (km, L, °C)</option>
+                            <option value="imperial">Imperial (mi, gal, °F)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="notifications-toggle" onchange="toggleNotifications(this.checked)">
+                            Enable Notifications
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <button class="btn-primary" onclick="resetDashboard()">Reset Dashboard</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Date Selector -->
         <section class="date-selector fade-in">
@@ -46,8 +99,121 @@
             </div>
         </section>
 
+        <!-- Interactive Map Widget -->
+        <section class="map-section fade-in">
+            <div class="widget full-width" id="map-widget">
+                <div class="widget-header">
+                    <h3>🗺️ Interactive Route Map</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('map-widget')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div id="route-map" style="height: 500px; border-radius: 0.5rem;"></div>
+                    <div class="map-controls">
+                        <button class="btn-secondary" onclick="showAlternativeRoutes()">Show Alternative Routes</button>
+                        <button class="btn-secondary" onclick="addWaypoint()">Add Waypoint</button>
+                        <button class="btn-secondary" onclick="calculateETA()">Calculate ETA</button>
+                    </div>
+                    <div id="eta-display" class="eta-info" style="display: none;">
+                        <h4>Estimated Arrival</h4>
+                        <p><strong>ETA:</strong> <span id="eta-time">--:--</span></p>
+                        <p><strong>Delays:</strong> <span id="eta-delays">None</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Weather Widget -->
+        <section class="live-weather-section fade-in">
+            <div class="widget full-width" id="live-weather">
+                <div class="widget-header">
+                    <h3>🌤️ Live Weather & Alerts</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('live-weather')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="weather-alerts" id="weather-alerts">
+                        <div class="alert-loading">Loading weather alerts...</div>
+                    </div>
+                    <div class="live-weather-grid" id="live-weather-grid">
+                        <div class="weather-loading">Fetching live weather data...</div>
+                    </div>
+                    <div class="weather-source">
+                        <small>Data updated every 30 minutes from OpenWeatherMap</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements & Gamification -->
+        <section class="achievements-section fade-in">
+            <div class="widget" id="achievements">
+                <div class="widget-header">
+                    <h3>🏆 Trip Achievements</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('achievements')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="achievements-grid">
+                        <div class="achievement locked" id="achievement-25">
+                            <div class="achievement-icon">🥉</div>
+                            <div class="achievement-info">
+                                <h4>First Quarter</h4>
+                                <p>Complete 25% of journey</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-50">
+                            <div class="achievement-icon">🥈</div>
+                            <div class="achievement-info">
+                                <h4>Halfway Hero</h4>
+                                <p>Reach the 1,500 km mark</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-75">
+                            <div class="achievement-icon">🥇</div>
+                            <div class="achievement-info">
+                                <h4>Almost There</h4>
+                                <p>Complete 75% of journey</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="achievement locked" id="achievement-100">
+                            <div class="achievement-icon">🎂</div>
+                            <div class="achievement-info">
+                                <h4>Birthday Arrival!</h4>
+                                <p>Reach Melfort successfully</p>
+                                <div class="achievement-progress">
+                                    <div class="progress-bar-mini" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="daily-challenge">
+                        <h4>🎯 Daily Challenge</h4>
+                        <div id="daily-challenge-content">
+                            <p><strong>Today:</strong> <span id="challenge-text">Take a photo at a rest stop and add it to your journal!</span></p>
+                        </div>
+                    </div>
+                    <div class="trivia-section">
+                        <h4>🧠 Province Trivia</h4>
+                        <div id="trivia-question">
+                            <p><strong>Q:</strong> <span id="trivia-q">What is the capital of Saskatchewan?</span></p>
+                            <button class="btn-secondary" onclick="showTriviaAnswer()">Show Answer</button>
+                            <p id="trivia-answer" style="display: none;"><strong>A:</strong> <span id="trivia-a">Regina</span></p>
+                        </div>
+                        <button class="btn-primary" onclick="nextTrivia()">Next Question</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
+        <div class="dashboard-grid" id="sortable-dashboard">
             
             <!-- Trip Overview Widget -->
             <div class="widget slide-in-left" id="trip-overview">
@@ -666,16 +832,117 @@
 
         </div>
 
+        <!-- Trip Cost Analysis Widget -->
+        <section class="cost-analysis-section fade-in">
+            <div class="widget full-width" id="cost-analysis">
+                <div class="widget-header">
+                    <h3>📈 Trip Cost Analysis</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('cost-analysis')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="cost-charts">
+                        <div class="cost-chart">
+                            <canvas id="cost-breakdown-chart"></canvas>
+                        </div>
+                        <div class="cost-stats">
+                            <div class="stat-card">
+                                <h4>Projected Total</h4>
+                                <p class="stat-value">$<span id="projected-cost">1,600</span></p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Actual Spent</h4>
+                                <p class="stat-value">$<span id="actual-cost">0</span></p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Remaining Budget</h4>
+                                <p class="stat-value">$<span id="remaining-budget">1,600</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="expense-tracker">
+                        <h4>Add Expense</h4>
+                        <div class="expense-form">
+                            <input type="text" id="expense-desc" placeholder="Description">
+                            <input type="number" id="expense-amount" placeholder="Amount ($)">
+                            <select id="expense-category">
+                                <option value="fuel">Fuel</option>
+                                <option value="accommodation">Accommodation</option>
+                                <option value="food">Food</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <button class="btn-primary" onclick="addExpense()">Add</button>
+                        </div>
+                        <div id="expense-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rest Areas & Attractions Widget -->
+        <section class="rest-areas-section fade-in">
+            <div class="widget full-width" id="rest-areas">
+                <div class="widget-header">
+                    <h3>🏞️ Rest Areas & Attractions</h3>
+                    <button class="toggle-btn" onclick="toggleWidget('rest-areas')">−</button>
+                </div>
+                <div class="widget-content">
+                    <div class="amenities-filter">
+                        <button class="filter-btn active" onclick="filterAmenities('all')">All</button>
+                        <button class="filter-btn" onclick="filterAmenities('rest')">Rest Stops</button>
+                        <button class="filter-btn" onclick="filterAmenities('attractions')">Attractions</button>
+                        <button class="filter-btn" onclick="filterAmenities('food')">Food</button>
+                    </div>
+                    <div class="amenities-list" id="amenities-list">
+                        <div class="amenity-card" data-type="rest">
+                            <h4>🚻 ONroute Barrie North</h4>
+                            <p class="amenity-location">Hwy 400 North, ~450 km</p>
+                            <p class="amenity-features">✓ Restrooms ✓ Tim Hortons ✓ EV Charging ✓ WiFi</p>
+                            <button class="btn-secondary" onclick="addToFavorites('barrie-rest')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>❄️ Kakabeka Falls</h4>
+                            <p class="amenity-location">Near Thunder Bay, ~1,400 km</p>
+                            <p class="amenity-features">Beautiful frozen waterfall • 30 min detour</p>
+                            <button class="btn-secondary" onclick="addToFavorites('kakabeka')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>🎆 The Forks</h4>
+                            <p class="amenity-location">Winnipeg, MB, ~2,100 km</p>
+                            <p class="amenity-features">Winter market • Fire pits • Food vendors</p>
+                            <button class="btn-secondary" onclick="addToFavorites('the-forks')">⭐ Favorite</button>
+                        </div>
+                        <div class="amenity-card" data-type="attractions">
+                            <h4>⛸️ Wascana Park</h4>
+                            <p class="amenity-location">Regina, SK, ~2,700 km</p>
+                            <p class="amenity-features">Ice skating • Walking trails • Photo ops</p>
+                            <button class="btn-secondary" onclick="addToFavorites('wascana')">⭐ Favorite</button>
+                        </div>
+                    </div>
+                    <div class="favorites-section">
+                        <h4>⭐ Your Favorites</h4>
+                        <div id="favorites-list">
+                            <p class="empty-state">No favorites yet. Click the star to add stops!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
                 <p>🚗 Safe travels! Focus on the journey, celebrate small wins.</p>
                 <p>If weather worsens, pivot without guilt. You've got this for Mom! 💝</p>
                 <p class="footer-note">Dashboard created for the Cobourg → Melfort winter journey • December 2024</p>
+                <p class="footer-note">Enhanced with live data, interactive features, and gamification</p>
             </div>
         </footer>
     </div>
 
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Chart.js for Cost Analysis -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

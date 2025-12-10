@@ -6,7 +6,12 @@ const TRIP_CONFIG = {
     TOTAL_DISTANCE: 3000, // km
     FUEL_EFFICIENCY_WINTER: 25, // MPG
     PRICE_PER_LITER: 1.70, // CAD
-    LITERS_PER_GALLON: 3.785
+    LITERS_PER_GALLON: 3.785,
+    START_MODAL_DELAY: 3000, // ms - delay before showing start trip modal
+    DRIVERS: {
+        A: { id: 'A', name: 'London', emoji: '🚗' },
+        B: { id: 'B', name: 'Chance', emoji: '🚙' }
+    }
 };
 
 // Initialize on page load
@@ -1528,7 +1533,7 @@ function openStartTripModal() {
     if (tripStarted) {
         const currentDriver = localStorage.getItem('currentDriver');
         if (currentDriver) {
-            selectStartingDriver(currentDriver, true);
+            selectStartingDriver(currentDriver);
         }
     } else {
         // Clear previous selection
@@ -1546,7 +1551,7 @@ function closeStartTripModal() {
     modal.style.display = 'none';
 }
 
-function selectStartingDriver(driverId, skipToggle) {
+function selectStartingDriver(driverId) {
     const driverABtn = document.getElementById('select-driver-a');
     const driverBBtn = document.getElementById('select-driver-b');
     const hiddenInput = document.getElementById('selected-starting-driver');
@@ -1570,12 +1575,12 @@ function confirmStartTrip() {
     const startDate = document.getElementById('trip-start-date-modal').value;
     
     if (!selectedDriver) {
-        alert('Please select a driver before starting the trip!');
+        showNotification('⚠️ Please select a driver before starting the trip!', 'warning');
         return;
     }
     
     if (!startDate) {
-        alert('Please select a start date!');
+        showNotification('⚠️ Please select a start date!', 'warning');
         return;
     }
     
@@ -1599,7 +1604,8 @@ function confirmStartTrip() {
     closeStartTripModal();
     
     // Show success message
-    const driverName = selectedDriver === 'A' ? 'London' : 'Chance';
+    const driverInfo = TRIP_CONFIG.DRIVERS[selectedDriver];
+    const driverName = driverInfo ? driverInfo.name : 'Driver ' + selectedDriver;
     showNotification(`🚗 Trip started! ${driverName} is driving. Safe travels!`, 'success');
     
     // Show milestone for starting
@@ -1616,7 +1622,8 @@ function updateTripStatus() {
     
     if (tripStarted) {
         const currentDriver = localStorage.getItem('currentDriver');
-        const driverName = currentDriver === 'A' ? 'London' : 'Chance';
+        const driverInfo = TRIP_CONFIG.DRIVERS[currentDriver];
+        const driverName = driverInfo ? driverInfo.name : 'Driver ' + currentDriver;
         const startDate = localStorage.getItem('tripStartDate');
         
         banner.style.display = 'flex';
@@ -1692,7 +1699,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!tripStarted) {
             setTimeout(() => {
                 openStartTripModal();
-            }, 3000); // Show after 3 seconds on first load
+            }, TRIP_CONFIG.START_MODAL_DELAY);
         }
         
         // Check if weather notifications are enabled

@@ -1,0 +1,1261 @@
+/* ===== Base Reset & Common Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+/* ===== Configuration Selector Panel ===== */
+.config-selector-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 100vh;
+    background: #1a1a2e;
+    color: #eee;
+    padding: 2rem;
+    overflow-y: auto;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.config-selector-panel.hidden {
+    transform: translateX(-100%);
+}
+
+.config-selector-panel h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.config-selector-panel .subtitle {
+    font-size: 0.875rem;
+    color: #aaa;
+    margin-bottom: 1.5rem;
+}
+
+.config-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.config-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+    padding: 1rem 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+}
+
+.config-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.config-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #764ba2;
+    transform: scale(1.05);
+}
+
+.config-number {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #667eea;
+}
+
+.config-btn.active .config-number {
+    color: #fff;
+}
+
+.config-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.toggle-selector {
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background: #1a1a2e;
+    border: none;
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.toggle-selector:hover {
+    background: #2a2a3e;
+}
+
+/* ===== Main Dashboard Container ===== */
+.dashboard-container {
+    margin-left: 400px;
+    padding: 2rem;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+.config-selector-panel.hidden + .dashboard-container {
+    margin-left: 0;
+}
+
+/* ===== Dashboard Header ===== */
+.dashboard-header {
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.header-content .title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.header-content .subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
+.header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* ===== Content Grid ===== */
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.widget {
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.widget:hover {
+    transform: translateY(-3px);
+}
+
+.widget-large {
+    grid-column: span 2;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+}
+
+.widget-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.widget-action {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.widget-action:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Stat Items */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Progress Bar */
+.progress-container {
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 40px;
+    border-radius: 50px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-weight: 700;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Weather Grid */
+.weather-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.weather-card {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.weather-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.weather-temp {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.weather-condition {
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+/* Budget Items */
+.budget-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.budget-label {
+    font-weight: 500;
+}
+
+.budget-amount {
+    font-weight: 700;
+}
+
+.budget-total {
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+}
+
+/* Checklist */
+.checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Route Visual */
+.route-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.route-point {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.route-point.active {
+    font-weight: 600;
+}
+
+.route-point.destination {
+    font-weight: 600;
+}
+
+.route-line {
+    width: 3px;
+    height: 20px;
+    margin-left: 1rem;
+}
+
+/* Contact List */
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.contact-name {
+    font-weight: 600;
+}
+
+.contact-number {
+    font-weight: 700;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.contact-item.emergency {
+    font-size: 1.125rem;
+}
+
+/* Footer */
+.dashboard-footer {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-top: 2rem;
+}
+
+.dashboard-footer p {
+    margin-bottom: 0.5rem;
+}
+
+.footer-meta {
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+#current-config-name {
+    font-weight: 700;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 1: Classic Dark Mode */
+/* ================================================================ */
+body[data-config="config-1"] {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+}
+
+body[data-config="config-1"] .dashboard-header {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+}
+
+body[data-config="config-1"] .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+body[data-config="config-1"] .widget {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+}
+
+body[data-config="config-1"] .widget:hover {
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+body[data-config="config-1"] .widget-header {
+    border-bottom: 2px solid #334155;
+}
+
+body[data-config="config-1"] .stat-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-config="config-1"] .stat-value {
+    color: #3b82f6;
+}
+
+body[data-config="config-1"] .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body[data-config="config-1"] .progress-fill {
+    background: linear-gradient(90deg, #2563eb, #10b981);
+}
+
+body[data-config="config-1"] .weather-card,
+body[data-config="config-1"] .budget-item,
+body[data-config="config-1"] .checklist-item,
+body[data-config="config-1"] .route-point,
+body[data-config="config-1"] .contact-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-config="config-1"] .route-point {
+    border-left-color: #64748b;
+}
+
+body[data-config="config-1"] .route-point.active {
+    border-left-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+body[data-config="config-1"] .route-point.destination {
+    border-left-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+body[data-config="config-1"] .route-line {
+    background: #334155;
+}
+
+body[data-config="config-1"] .dashboard-footer {
+    background: rgba(255, 255, 255, 0.03);
+    border-top: 2px solid #334155;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 2: Light Minimal */
+/* ================================================================ */
+body[data-config="config-2"] {
+    background: #ffffff;
+    color: #1e293b;
+}
+
+body[data-config="config-2"] .dashboard-header {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #1e293b;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+body[data-config="config-2"] .badge {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+body[data-config="config-2"] .widget {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+body[data-config="config-2"] .widget:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+body[data-config="config-2"] .widget-header {
+    border-bottom: 2px solid #f1f5f9;
+}
+
+body[data-config="config-2"] .stat-item {
+    background: #f8fafc;
+}
+
+body[data-config="config-2"] .stat-value {
+    color: #3b82f6;
+}
+
+body[data-config="config-2"] .progress-bar {
+    background: #f1f5f9;
+}
+
+body[data-config="config-2"] .progress-fill {
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+}
+
+body[data-config="config-2"] .weather-card,
+body[data-config="config-2"] .budget-item,
+body[data-config="config-2"] .checklist-item,
+body[data-config="config-2"] .route-point,
+body[data-config="config-2"] .contact-item {
+    background: #f8fafc;
+}
+
+body[data-config="config-2"] .weather-card:hover,
+body[data-config="config-2"] .budget-item:hover,
+body[data-config="config-2"] .checklist-item:hover,
+body[data-config="config-2"] .contact-item:hover {
+    background: #f1f5f9;
+}
+
+body[data-config="config-2"] .route-point {
+    border-left-color: #cbd5e1;
+}
+
+body[data-config="config-2"] .route-point.active {
+    border-left-color: #10b981;
+    background: #d1fae5;
+}
+
+body[data-config="config-2"] .route-point.destination {
+    border-left-color: #f59e0b;
+    background: #fef3c7;
+}
+
+body[data-config="config-2"] .route-line {
+    background: #e2e8f0;
+}
+
+body[data-config="config-2"] .dashboard-footer {
+    background: #f8fafc;
+    border-top: 2px solid #e2e8f0;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 3: High Contrast Accessibility */
+/* ================================================================ */
+body[data-config="config-3"] {
+    background: #000000;
+    color: #ffffff;
+}
+
+body[data-config="config-3"] .dashboard-header {
+    background: #000000;
+    color: #ffff00;
+    border: 3px solid #ffff00;
+}
+
+body[data-config="config-3"] .badge {
+    background: #ffff00;
+    color: #000000;
+    border: 2px solid #ffff00;
+}
+
+body[data-config="config-3"] .widget {
+    background: #000000;
+    border: 3px solid #ffffff;
+    color: #ffffff;
+}
+
+body[data-config="config-3"] .widget:hover {
+    border-color: #ffff00;
+}
+
+body[data-config="config-3"] .widget-header {
+    border-bottom: 3px solid #ffffff;
+    color: #ffff00;
+}
+
+body[data-config="config-3"] .stat-item {
+    background: #000000;
+    border: 2px solid #ffffff;
+}
+
+body[data-config="config-3"] .stat-value {
+    color: #00ff00;
+}
+
+body[data-config="config-3"] .progress-bar {
+    background: #333333;
+    border: 2px solid #ffffff;
+}
+
+body[data-config="config-3"] .progress-fill {
+    background: #00ff00;
+}
+
+body[data-config="config-3"] .weather-card,
+body[data-config="config-3"] .budget-item,
+body[data-config="config-3"] .checklist-item,
+body[data-config="config-3"] .route-point,
+body[data-config="config-3"] .contact-item {
+    background: #000000;
+    border: 2px solid #ffffff;
+}
+
+body[data-config="config-3"] .route-point {
+    border-left: 4px solid #ffffff;
+}
+
+body[data-config="config-3"] .route-point.active {
+    border-left-color: #00ff00;
+    background: #003300;
+}
+
+body[data-config="config-3"] .route-point.destination {
+    border-left-color: #ffff00;
+    background: #333300;
+}
+
+body[data-config="config-3"] .route-line {
+    background: #ffffff;
+}
+
+body[data-config="config-3"] .dashboard-footer {
+    background: #000000;
+    border: 3px solid #ffffff;
+    color: #ffffff;
+}
+
+body[data-config="config-3"] .contact-item.emergency {
+    border-color: #ff0000;
+    color: #ff0000;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 4: Retro 80s Neon */
+/* ================================================================ */
+body[data-config="config-4"] {
+    background: #0a0e27;
+    color: #00ffff;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+body[data-config="config-4"] .dashboard-header {
+    background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+    color: #ffffff;
+    box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+    border: 2px solid #ff006e;
+}
+
+body[data-config="config-4"] .badge {
+    background: transparent;
+    color: #00ffff;
+    border: 2px solid #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+body[data-config="config-4"] .widget {
+    background: rgba(131, 56, 236, 0.1);
+    border: 2px solid #8338ec;
+    color: #00ffff;
+    box-shadow: 0 0 20px rgba(131, 56, 236, 0.3);
+}
+
+body[data-config="config-4"] .widget:hover {
+    box-shadow: 0 0 40px rgba(255, 0, 110, 0.5);
+    border-color: #ff006e;
+}
+
+body[data-config="config-4"] .widget-header {
+    border-bottom: 2px solid #ff006e;
+    color: #ff006e;
+    text-shadow: 0 0 10px #ff006e;
+}
+
+body[data-config="config-4"] .stat-item {
+    background: rgba(58, 134, 255, 0.1);
+    border: 1px solid #3a86ff;
+}
+
+body[data-config="config-4"] .stat-value {
+    color: #ff006e;
+    text-shadow: 0 0 10px #ff006e;
+}
+
+body[data-config="config-4"] .progress-bar {
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #00ffff;
+}
+
+body[data-config="config-4"] .progress-fill {
+    background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff);
+    box-shadow: 0 0 20px #ff006e;
+}
+
+body[data-config="config-4"] .weather-card,
+body[data-config="config-4"] .budget-item,
+body[data-config="config-4"] .checklist-item,
+body[data-config="config-4"] .route-point,
+body[data-config="config-4"] .contact-item {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid #00ffff;
+}
+
+body[data-config="config-4"] .route-point {
+    border-left: 4px solid #8338ec;
+}
+
+body[data-config="config-4"] .route-point.active {
+    border-left-color: #00ffff;
+    background: rgba(0, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+body[data-config="config-4"] .route-point.destination {
+    border-left-color: #ff006e;
+    background: rgba(255, 0, 110, 0.15);
+    box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+}
+
+body[data-config="config-4"] .route-line {
+    background: #8338ec;
+    box-shadow: 0 0 10px #8338ec;
+}
+
+body[data-config="config-4"] .dashboard-footer {
+    background: rgba(255, 0, 110, 0.1);
+    border: 2px solid #ff006e;
+    color: #00ffff;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 5: Forest Green Nature Theme */
+/* ================================================================ */
+body[data-config="config-5"] {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    color: #d8f3dc;
+}
+
+body[data-config="config-5"] .dashboard-header {
+    background: linear-gradient(135deg, #40916c, #52b788);
+    color: white;
+}
+
+body[data-config="config-5"] .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-5"] .widget {
+    background: rgba(45, 106, 79, 0.6);
+    border: 1px solid #52b788;
+    color: #d8f3dc;
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-5"] .widget:hover {
+    box-shadow: 0 10px 30px rgba(82, 183, 136, 0.3);
+    border-color: #74c69d;
+}
+
+body[data-config="config-5"] .widget-header {
+    border-bottom: 2px solid #52b788;
+}
+
+body[data-config="config-5"] .stat-item {
+    background: rgba(82, 183, 136, 0.2);
+}
+
+body[data-config="config-5"] .stat-value {
+    color: #95d5b2;
+}
+
+body[data-config="config-5"] .progress-bar {
+    background: rgba(82, 183, 136, 0.2);
+}
+
+body[data-config="config-5"] .progress-fill {
+    background: linear-gradient(90deg, #40916c, #95d5b2);
+}
+
+body[data-config="config-5"] .weather-card,
+body[data-config="config-5"] .budget-item,
+body[data-config="config-5"] .checklist-item,
+body[data-config="config-5"] .route-point,
+body[data-config="config-5"] .contact-item {
+    background: rgba(82, 183, 136, 0.15);
+}
+
+body[data-config="config-5"] .route-point {
+    border-left-color: #74c69d;
+}
+
+body[data-config="config-5"] .route-point.active {
+    border-left-color: #95d5b2;
+    background: rgba(149, 213, 178, 0.2);
+}
+
+body[data-config="config-5"] .route-point.destination {
+    border-left-color: #b7e4c7;
+    background: rgba(183, 228, 199, 0.2);
+}
+
+body[data-config="config-5"] .route-line {
+    background: #52b788;
+}
+
+body[data-config="config-5"] .dashboard-footer {
+    background: rgba(82, 183, 136, 0.15);
+    border-top: 2px solid #52b788;
+}
+
+
+/* Additional configurations 6-20 for theme-configurations.css */
+/* Append this to the existing file or import it */
+
+/* ================================================================ */
+/* CONFIGURATION 6: Ocean Blue */
+/* ================================================================ */
+body[data-config="config-6"] {
+    background: linear-gradient(135deg, #03045e 0%, #023e8a 100%);
+    color: #caf0f8;
+}
+
+body[data-config="config-6"] .dashboard-header {
+    background: linear-gradient(135deg, #0077b6, #00b4d8);
+    color: white;
+}
+
+body[data-config="config-6"] .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+body[data-config="config-6"] .widget {
+    background: rgba(2, 62, 138, 0.6);
+    border: 1px solid #0096c7;
+    color: #caf0f8;
+}
+
+body[data-config="config-6"] .stat-value,
+body[data-config="config-6"] .weather-temp {
+    color: #90e0ef;
+}
+
+body[data-config="config-6"] .progress-fill {
+    background: linear-gradient(90deg, #0077b6, #48cae4);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 7: Sunset Warm */
+/* ================================================================ */
+body[data-config="config-7"] {
+    background: linear-gradient(135deg, #4a1a1a 0%, #6b2d2d 100%);
+    color: #ffe4d6;
+}
+
+body[data-config="config-7"] .dashboard-header {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+}
+
+body[data-config="config-7"] .widget {
+    background: rgba(107, 45, 45, 0.6);
+    border: 1px solid #ff6b35;
+}
+
+body[data-config="config-7"] .stat-value {
+    color: #ffb88c;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 8: Monochrome */
+/* ================================================================ */
+body[data-config="config-8"] {
+    background: #f5f5f5;
+    color: #000000;
+}
+
+body[data-config="config-8"] .dashboard-header {
+    background: #000000;
+    color: #ffffff;
+    border: 3px solid #000000;
+}
+
+body[data-config="config-8"] .widget {
+    background: #ffffff;
+    border: 2px solid #000000;
+}
+
+body[data-config="config-8"] .progress-fill {
+    background: linear-gradient(90deg, #333333, #666666);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 9: Cyberpunk */
+/* ================================================================ */
+body[data-config="config-9"] {
+    background: linear-gradient(135deg, #0d0221, #240046);
+    color: #ff006e;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+body[data-config="config-9"] .dashboard-header {
+    background: linear-gradient(135deg, #7209b7, #b5179e, #f72585);
+    box-shadow: 0 0 40px rgba(242, 37, 133, 0.6);
+}
+
+body[data-config="config-9"] .widget {
+    background: rgba(36, 0, 70, 0.6);
+    border: 2px solid #b5179e;
+    box-shadow: 0 0 30px rgba(181, 23, 158, 0.3);
+}
+
+body[data-config="config-9"] .stat-value {
+    color: #f72585;
+    text-shadow: 0 0 15px #f72585;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 10: Pastel Soft */
+/* ================================================================ */
+body[data-config="config-10"] {
+    background: linear-gradient(135deg, #faf0e6, #fff5ee);
+    color: #333333;
+}
+
+body[data-config="config-10"] .dashboard-header {
+    background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff);
+}
+
+body[data-config="config-10"] .widget {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #ffb3ba;
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-10"] .stat-value {
+    color: #ff9aa2;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 11: Material Design */
+/* ================================================================ */
+body[data-config="config-11"] {
+    background: #fafafa;
+    color: #212121;
+    font-family: 'Roboto', sans-serif;
+}
+
+body[data-config="config-11"] .dashboard-header {
+    background: #1976d2;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+}
+
+body[data-config="config-11"] .widget {
+    background: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+body[data-config="config-11"] .widget:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 12: Neumorphism */
+/* ================================================================ */
+body[data-config="config-12"] {
+    background: #e0e5ec;
+    color: #333333;
+}
+
+body[data-config="config-12"] .dashboard-header {
+    background: #e0e5ec;
+    color: #333333;
+    box-shadow: 9px 9px 16px #a3b1c6, -9px -9px 16px #ffffff;
+}
+
+body[data-config="config-12"] .widget {
+    background: #e0e5ec;
+    border: none;
+    box-shadow: 9px 9px 16px #a3b1c6, -9px -9px 16px #ffffff;
+    border-radius: 20px;
+}
+
+body[data-config="config-12"] .stat-item {
+    background: #e0e5ec;
+    box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 13: Glassmorphism */
+/* ================================================================ */
+body[data-config="config-13"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+body[data-config="config-13"] .dashboard-header {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-13"] .widget {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-13"] .stat-item,
+body[data-config="config-13"] .weather-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 14: Card-Based Layout */
+/* ================================================================ */
+body[data-config="config-14"] {
+    background: #f0f2f5;
+}
+
+body[data-config="config-14"] .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+body[data-config="config-14"] .widget {
+    background: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+body[data-config="config-14"] .widget:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 15: Sidebar Navigation */
+/* ================================================================ */
+body[data-config="config-15"] .dashboard-container {
+    display: flex;
+}
+
+body[data-config="config-15"] .dashboard-header {
+    position: fixed;
+    left: 400px;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+body[data-config="config-15"] .content-grid {
+    margin-top: 8rem;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 16: Compact Dense */
+/* ================================================================ */
+body[data-config="config-16"] {
+    font-size: 0.875rem;
+}
+
+body[data-config="config-16"] .widget {
+    padding: 1rem;
+}
+
+body[data-config="config-16"] .content-grid {
+    gap: 1rem;
+}
+
+body[data-config="config-16"] .stat-item {
+    padding: 0.75rem;
+}
+
+body[data-config="config-16"] .header-content .title {
+    font-size: 2rem;
+}
+
+body[data-config="config-16"] .progress-bar {
+    height: 30px;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 17: Large Text Mode */
+/* ================================================================ */
+body[data-config="config-17"] {
+    font-size: 1.25rem;
+}
+
+body[data-config="config-17"] .header-content .title {
+    font-size: 3.5rem;
+}
+
+body[data-config="config-17"] .widget-header h3 {
+    font-size: 1.75rem;
+}
+
+body[data-config="config-17"] .stat-value {
+    font-size: 2rem;
+}
+
+body[data-config="config-17"] .widget {
+    padding: 2rem;
+}
+
+body[data-config="config-17"] .progress-bar {
+    height: 50px;
+}
+
+/* ================================================================ */
+/* CONFIGURATION 18: Gradient Heavy */
+/* ================================================================ */
+body[data-config="config-18"] {
+    background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body[data-config="config-18"] .dashboard-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+body[data-config="config-18"] .widget {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+body[data-config="config-18"] .stat-item {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+body[data-config="config-18"] .progress-fill {
+    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 19: Split Screen */
+/* ================================================================ */
+body[data-config="config-19"] .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+body[data-config="config-19"] .widget {
+    grid-column: span 1;
+}
+
+body[data-config="config-19"] .widget-large {
+    grid-column: span 2;
+}
+
+body[data-config="config-19"] .dashboard-header {
+    background: linear-gradient(90deg, #667eea 0%, #667eea 50%, #764ba2 50%, #764ba2 100%);
+}
+
+/* ================================================================ */
+/* CONFIGURATION 20: Magazine Style */
+/* ================================================================ */
+body[data-config="config-20"] {
+    font-family: 'Georgia', serif;
+    background: #f9f9f9;
+    color: #2c2c2c;
+}
+
+body[data-config="config-20"] .header-content .title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 700;
+}
+
+body[data-config="config-20"] .widget {
+    background: white;
+    border: 1px solid #e0e0e0;
+    padding: 2.5rem;
+}
+
+body[data-config="config-20"] .widget-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    border-bottom: 3px solid #2c2c2c;
+}
+
+body[data-config="config-20"] .content-grid {
+    column-count: 2;
+    column-gap: 2rem;
+}
+
+body[data-config="config-20"] .widget {
+    break-inside: avoid;
+    margin-bottom: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body[data-config="config-19"] .content-grid,
+    body[data-config="config-20"] .content-grid {
+        grid-template-columns: 1fr;
+        column-count: 1;
+    }
+}

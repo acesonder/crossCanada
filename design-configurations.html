@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20 Unique Design Configurations - Cross-Canada Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto+Mono:wght@400;700&family=Playfair+Display:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme-configurations.css">
+</head>
+<body data-config="config-1">
+    <!-- Configuration Selector Panel -->
+    <div class="config-selector-panel">
+        <h2>🎨 Design Configuration Selector</h2>
+        <p class="subtitle">Choose from 20 unique designs</p>
+        <div class="config-grid">
+            <button class="config-btn active" onclick="switchConfig(1)">
+                <span class="config-number">1</span>
+                <span class="config-name">Classic Dark</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(2)">
+                <span class="config-number">2</span>
+                <span class="config-name">Light Minimal</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(3)">
+                <span class="config-number">3</span>
+                <span class="config-name">High Contrast</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(4)">
+                <span class="config-number">4</span>
+                <span class="config-name">Retro Neon</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(5)">
+                <span class="config-number">5</span>
+                <span class="config-name">Forest Green</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(6)">
+                <span class="config-number">6</span>
+                <span class="config-name">Ocean Blue</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(7)">
+                <span class="config-number">7</span>
+                <span class="config-name">Sunset Warm</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(8)">
+                <span class="config-number">8</span>
+                <span class="config-name">Monochrome</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(9)">
+                <span class="config-number">9</span>
+                <span class="config-name">Cyberpunk</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(10)">
+                <span class="config-number">10</span>
+                <span class="config-name">Pastel Soft</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(11)">
+                <span class="config-number">11</span>
+                <span class="config-name">Material Design</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(12)">
+                <span class="config-number">12</span>
+                <span class="config-name">Neumorphism</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(13)">
+                <span class="config-number">13</span>
+                <span class="config-name">Glassmorphism</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(14)">
+                <span class="config-number">14</span>
+                <span class="config-name">Card Layout</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(15)">
+                <span class="config-number">15</span>
+                <span class="config-name">Sidebar Nav</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(16)">
+                <span class="config-number">16</span>
+                <span class="config-name">Compact Dense</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(17)">
+                <span class="config-number">17</span>
+                <span class="config-name">Large Text</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(18)">
+                <span class="config-number">18</span>
+                <span class="config-name">Gradient Heavy</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(19)">
+                <span class="config-number">19</span>
+                <span class="config-name">Split Screen</span>
+            </button>
+            <button class="config-btn" onclick="switchConfig(20)">
+                <span class="config-number">20</span>
+                <span class="config-name">Magazine Style</span>
+            </button>
+        </div>
+        <button class="toggle-selector" onclick="toggleSelector()">
+            <span id="toggle-icon">◀</span>
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1 class="title">🚗 Cross-Canada Journey</h1>
+                <p class="subtitle">Cobourg, ON → Melfort, SK</p>
+            </div>
+            <div class="header-meta">
+                <span class="badge">3,000 km</span>
+                <span class="badge">5 Days</span>
+                <span class="badge">2019 Buick</span>
+            </div>
+        </header>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Widget 1: Trip Overview -->
+            <div class="widget widget-large">
+                <div class="widget-header">
+                    <h3>🗺️ Trip Overview</h3>
+                    <button class="widget-action">⚙️</button>
+                </div>
+                <div class="widget-content">
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Distance</span>
+                            <span class="stat-value">3,000 km</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Drive Time</span>
+                            <span class="stat-value">30-32 hrs</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Daily Average</span>
+                            <span class="stat-value">600 km</span>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%">
+                                <span class="progress-text">45%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget 2: Weather Forecast -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>🌦️ Weather</h3>
+                    <button class="widget-action">↻</button>
+                </div>
+                <div class="widget-content">
+                    <div class="weather-grid">
+                        <div class="weather-card">
+                            <div class="weather-icon">❄️</div>
+                            <div class="weather-temp">-10°C</div>
+                            <div class="weather-condition">Snow</div>
+                        </div>
+                        <div class="weather-card">
+                            <div class="weather-icon">🌬️</div>
+                            <div class="weather-temp">-15°C</div>
+                            <div class="weather-condition">Windy</div>
+                        </div>
+                        <div class="weather-card">
+                            <div class="weather-icon">☁️</div>
+                            <div class="weather-temp">-20°C</div>
+                            <div class="weather-condition">Cloudy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget 3: Budget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>💰 Budget</h3>
+                    <button class="widget-action">+</button>
+                </div>
+                <div class="widget-content">
+                    <div class="budget-item">
+                        <span class="budget-label">⛽ Fuel</span>
+                        <span class="budget-amount">$425-530</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="budget-label">🏨 Hotels</span>
+                        <span class="budget-amount">$670-820</span>
+                    </div>
+                    <div class="budget-item">
+                        <span class="budget-label">🍔 Food</span>
+                        <span class="budget-amount">$200-300</span>
+                    </div>
+                    <div class="budget-item budget-total">
+                        <span class="budget-label">Total</span>
+                        <span class="budget-amount">$1,395-1,800</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget 4: Safety Checklist -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>🛡️ Safety</h3>
+                    <button class="widget-action">✓</button>
+                </div>
+                <div class="widget-content">
+                    <div class="checklist">
+                        <label class="checklist-item">
+                            <input type="checkbox" checked>
+                            <span>Install winter tires</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox">
+                            <span>Change oil (55%)</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox">
+                            <span>Check battery</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox" checked>
+                            <span>Pack emergency kit</span>
+                        </label>
+                        <label class="checklist-item">
+                            <input type="checkbox">
+                            <span>Fill windshield fluid</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget 5: Route Map -->
+            <div class="widget widget-large">
+                <div class="widget-header">
+                    <h3>🗺️ Route Map</h3>
+                    <button class="widget-action">🔍</button>
+                </div>
+                <div class="widget-content">
+                    <div class="route-visual">
+                        <div class="route-point active">📍 Cobourg, ON</div>
+                        <div class="route-line"></div>
+                        <div class="route-point">🚗 Sault Ste. Marie</div>
+                        <div class="route-line"></div>
+                        <div class="route-point">⛽ Thunder Bay</div>
+                        <div class="route-line"></div>
+                        <div class="route-point">🏨 Winnipeg</div>
+                        <div class="route-line"></div>
+                        <div class="route-point">🍽️ Regina</div>
+                        <div class="route-line"></div>
+                        <div class="route-point destination">🎂 Melfort, SK</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget 6: Emergency Contacts -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3>🚨 Emergency</h3>
+                    <button class="widget-action">📞</button>
+                </div>
+                <div class="widget-content">
+                    <div class="contact-list">
+                        <div class="contact-item emergency">
+                            <span class="contact-name">Emergency</span>
+                            <span class="contact-number">911</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">CAA</span>
+                            <span class="contact-number">1-800-222-4357</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-name">Ontario 511</span>
+                            <span class="contact-number">511</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>🚗 Safe travels! You've got this for Mom! 💝</p>
+            <p class="footer-meta">Current Configuration: <span id="current-config-name">Classic Dark Mode</span></p>
+        </footer>
+    </div>
+
+    <script src="theme-configurations.js"></script>
+</body>
+</html>
